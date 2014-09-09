@@ -30,21 +30,21 @@ def main():
 		key = request.args.get('key', '');
 		return json.dumps({'key': key, 'value': get_from_db()})
 
-  elif  request.method == 'POST':
-    key = request.form.get('key', '')
-    value = request.form.get('value', '')
-    d  = {'return': -1, 
-          'value': "",
-          'old_value': ""}
-    if not key or not value:
-      return d
-    o_val = get_from_db(key)
-    d['return'] = 0 if o_val else 1
-    ret = put_in_db(key, value)
-    return json.dumps(d)
-  else:
-    return json.dumps({'status': 'error', 'message': 'only GET or POST are valid methods'})
+	elif  request.method == 'POST':
+		key = request.form.get('key', '')
+		value = request.form.get('value', '')
+		d  = {'return': -1, 
+					'value': "",
+					'old_value': ""}
+		if not key or not value:
+			return d
+		o_val = get_from_db(key)
+		d['return'] = 0 if o_val else 1
+		ret = put_in_db(key, value)
+		return json.dumps(d)
+	else:
+		return json.dumps({'status': 'error', 'message': 'only GET or POST are valid methods'})
 
 if __name__ == "__main__":
-  app.debug = True
-  app.run()
+	app.debug = True
+	app.run()
