@@ -4,7 +4,6 @@ import json
 import dbWorkers
 get_from_db = dbWorkers.get
 put_in_db = dbWorkers.put
-dbWorkers.startConnection()
 
 app = Flask(__name__)
 
@@ -21,7 +20,7 @@ def create_value():
 
 	old_value = get_from_db(key)
 
-	data  = {'return': -1, 
+	data = {'return': -1, 
 				'key': key,
 				'value': value,
 				'old_value': old_value}
