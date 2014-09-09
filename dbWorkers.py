@@ -28,11 +28,11 @@ def get(key):
 	#check if connection is open else open it!
 	if not myCursor:
 		startConnection()
-	myCursor.execute("SELECT value from "+dbTable+" where key = '"+key+"'")
 		
 	try:
+		myCursor.execute("SELECT value from "+dbTable+" where key = '"+key+"'")
 		value=myCursor.fetchone()[0]
-	except RuntimeError:
+	except:
 		value = ''
 		
 	return value
@@ -42,8 +42,13 @@ def put(key,value):
 	#check if connection is open else open it!
 	if not myCursor:
 		startConnection()
+
 	myCursor.execute("INSERT INTO "+dbTable+" VALUES ('"+key+"','"+value+"')")
 	myConnection.commit()
+	# try:
+	# except:
+	# 	pass
+
 	#TODO: check if successful
 
 def unit_test():
