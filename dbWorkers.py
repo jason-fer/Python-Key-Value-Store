@@ -42,6 +42,7 @@ def put(key,value):
 	#TODO: check if successful
 
 if __name__ == '__main__':
+	#UNIT TEST BELOW!
 	startConnection();	
 	ts = time.time()
 	put(datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),"newValue")
