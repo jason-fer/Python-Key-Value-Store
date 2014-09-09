@@ -1,4 +1,7 @@
 import sqlite3
+import time
+import datetime
+
 myConnection = None
 myCursor = None
 
@@ -13,8 +16,8 @@ def hello(someValue):
 def startConnection():
 	global myCursor, myConnection
 	print "Creating Connection ..."
-	myConnection = sqlite3.connect('db/allData')
-        #myConnection = sqlite3.connect('db/'+dbName)
+	#myConnection = sqlite3.connect('db/allData')
+        myConnection = sqlite3.connect('db/'+dbName)
 	myCursor = myConnection.cursor()
 
 def stopConnection():
@@ -37,6 +40,7 @@ def put(key,value):
 
 if __name__ == '__main__':
 	hello("saikat")
-	startConnection();
-	put("newKey","newValue")
+	startConnection();	
+	ts = time.time()
+	put(datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),"newValue")
 	stopConnection();

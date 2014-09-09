@@ -12,17 +12,17 @@ app = Flask(__name__)
 dbWorkers.startConnection()
 
 def get_value():
-  key = request.args.get('key');
-  return dbWorkers.get(key)
+	key = request.args.get('key', '');
+	return dbWorkers.get(key)
 
 def create_value():
-  key = request.form['key'];
-  value = request.form['value'];
+	key = request.form['key'];
+	value = request.form['value'];
 
-  if not key or not value: 
-    return 'error'
+	if not key or not value: 
+		return 'error'
 
-  return dbWorkers.put(key, value)
+	return dbWorkers.put(key, value)
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
