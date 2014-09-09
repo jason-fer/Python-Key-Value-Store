@@ -28,7 +28,7 @@ def create_value():
 def main():
 	if request.method == 'GET':
 		key = request.args.get('key', '');
-		return json.dumps({'key': key, 'value': get_from_db()})
+		return json.dumps({'key': key, 'value': get_from_db(key)})
 
 	elif  request.method == 'POST':
 		key = request.form.get('key', '')
