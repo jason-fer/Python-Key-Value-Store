@@ -1,12 +1,13 @@
 from flask import Flask
 from flask import request
+import dbWorkers
 app = Flask(__name__)
 
+dbWorkers.startConnection()
 
 def get_value():
-  # key = request.args.get('key');
-  # return key
-  return "get_value()"
+  key = request.args.get('key');
+  return dbWorkers.get(key)
   #run Saikats get method to retrieve the value from the db
   #just return the result
 
