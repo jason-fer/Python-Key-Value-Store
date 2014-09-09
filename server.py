@@ -1,22 +1,26 @@
 from flask import Flask
 from flask import request
 import json
+import dbWorkers
 app = Flask(__name__)
 
+#@todo: json encode / decode payload
+
+dbWorkers.startConnection()
 
 def get_value():
-  # key = request.args.get('key');
-  # return key
-  return "get_value()"
-  #run Saikats get method to retrieve the value from the db
-  #just return the result
+  key = request.args.get('key');
+
+  return dbWorkers.get(key)
 
 def create_value():
-  return "create_value()"
-  #json decode the payload
-  #make sure there's at least a key
-  #run Saikats create method to set the value in the database
-  #just return the result
+  key = request.form['key'];
+  value = request.form['value'];
+
+  if not key or not value: 
+    return 'error'
+
+  return dbWorkers.put(key, value)
 
 @app.route('/', methods=['GET', 'POST'])
 def main():

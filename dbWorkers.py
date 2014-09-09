@@ -1,6 +1,9 @@
 import sqlite3
-#myConnection = sqlite3.connect('db/allData')
-#myCursor = myConnection.cursor()
+myConnection = None
+myCursor = None
+
+dbName="allData"
+dbTable="allData" #messedupSomewhere!
 
 def hello(someValue):
 	print "Hello MaderC."
@@ -13,14 +16,19 @@ def startConnection():
 
 def stopConnection():
 	myConnection.close()
+        myConnection = None
+        myCursor = None
 
 def get(key):
-	#do db connection here
+	value=key
 	return value
 
 def put(key,value):
-	#do db connection here
-	pass
+	#check if connection is open else open it!
+	if not myCursor:
+		startConnection()
+	myCursor.exceute("INSERT INTO "+dbTable+" VALUE ('"+key+"','"+value+"')")
+	myConnection.commit()
 
 if __name__ == '__main__':
 	hello("saikat")
