@@ -18,23 +18,21 @@ def create_value():
 	value = request.form['value'];
 
 	if not key or not value: 
-		return 'error'
+		return json.dumps({'status': 'error', 'message': 'get() requires a key'})
 
 	return dbWorkers.put(key, value)
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
 	if request.method == 'GET':
-		key = request.args.get('key', 'WTFFF');
-		print key
+		key = request.args.get('key', '');
 		return json.dumps({'key': key, 'value':get_value()})
 	elif  request.method == 'POST':
 		key = request.form.get('key', '')
 		value = request.form.get('value', '')
-		print key, value
 		return json.dumps({'key': key, 'value':value})
 	else:
-			return 'error'
+		return json.dumps({'status': 'error', 'message': 'only GET or POST are valid methods'})
 
 if __name__ == "__main__":
 	app.debug = True
