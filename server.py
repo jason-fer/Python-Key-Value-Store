@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 def get_value():
 	key = request.args.get('key', '');
-	return get_from_db(key)
+	return {'key': key, 'value': get_from_db(key)}
 
 def create_value():
 	key = request.form.get('key', '')
@@ -34,12 +34,9 @@ def create_value():
 @app.route('/', methods=['GET', 'POST'])
 def main():
 	if request.method == 'GET':
-		key = request.args.get('key', '');
-		return json.dumps({'key': key, 'value': get_from_db(key)})
-
+		return json.dumps(get_value()) 
 	elif  request.method == 'POST':
 		return json.dumps(create_value())
-
 	else:
 		return json.dumps({'status': 'error', 'message': 'only GET or POST are valid methods'})
 
