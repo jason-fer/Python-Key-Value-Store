@@ -54,6 +54,8 @@ def unit_test():
 	startConnection();	
 	ts = time.time()
 	put(datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),"newValue")
+	put("1", "hello")
+	put("2", "world")
 	value=get("1")
 	print("Value for Key=1 is "+value)
 	stopConnection();
