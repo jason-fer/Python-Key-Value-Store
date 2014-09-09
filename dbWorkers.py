@@ -18,6 +18,7 @@ def stopConnection():
 	myConnection.close()
 
 def get(key):
+	value=key
 	return value
 
 def put(key,value):
