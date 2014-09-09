@@ -13,11 +13,11 @@ def hello(someValue):
 def startConnection():
 	myConnection = sqlite3.connect('db/allData')
 	myCursor = myConnection.cursor()
-	myConnection = None
-	myCursor = None
 
 def stopConnection():
 	myConnection.close()
+        myConnection = None
+        myCursor = None
 
 def get(key):
 	value=key
