@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+import json
 app = Flask(__name__)
 
 
@@ -20,13 +21,34 @@ def create_value():
 @app.route('/', methods=['GET', 'POST'])
 def main():
   if request.method == 'GET':
-      return get_value()
+    key = request.args.get('key', 'WTFFF');
+    print key
+    return json.dumps({'key': key, 'value':get_value()})
   elif  request.method == 'POST':
-      return create_value()
+    key = request.form.get('key', '')
+    value = request.form.get('value', '')
+    print key, value
+    return json.dumps({'key': key, 'value':value})
   else:
       return 'error'
 
 if __name__ == "__main__":
   app.debug = True
   app.run()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
