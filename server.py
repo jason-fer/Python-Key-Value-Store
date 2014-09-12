@@ -18,12 +18,12 @@ def get_value():
 	if not key:
 		# not present
 		status = 1;
-
+	ret, value = get_from_db(key)
 	return  {
-						'return': status,
-						'key': key,
-						'value': get_from_db(key)
-					}
+		'return': status,
+		'key': key,
+		'value': value
+		}
 
 def create_value():
 	key = request.form.get('key', '')
@@ -32,13 +32,13 @@ def create_value():
 
 	if not key or not value: 
 		return  {
-							'return': status,
-							'errors': [
-								'get() requires a key'
-							]
-						}
+			'return': status,
+			'errors': [
+				'get() requires a key'
+				]
+			}
 
-	old_value = get_from_db(key)
+	ret, old_value = get_from_db(key)
 
 	if not old_value:
 		#1 = the key was not present
@@ -50,11 +50,11 @@ def create_value():
 		update_in_db(key, value)
 
 	data = {
-					'return': status, 
-					'key': key,
-					'value': value,
-					'old_value': old_value
-				}
+		'return': status, 
+		'key': key,
+		'value': value,
+		'old_value': old_value
+		}
 
 	return data;
 
