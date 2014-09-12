@@ -32,7 +32,7 @@ def get(key):
 	# throws an error if you try to retrieve a key that doesn't exist
 	try:
 		myCursor.execute("SELECT value from "+dbTable+" where key = '"+key+"'")
-		value=myCursor.fetchone()[0]
+		value=myCursor.fetchone()[0].strip()
 	except:
 		value = ''
 		
