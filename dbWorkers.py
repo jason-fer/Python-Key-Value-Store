@@ -40,6 +40,7 @@ def stopConnection():
 		print("[INFO] "+getTime()+": Connection Closed!")
 	except:
 		print("[ERROR] "+getTime()+": Failed to close connection!")
+	return isClosed
 		
 
 def get(key):
