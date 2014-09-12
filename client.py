@@ -3,10 +3,13 @@ import json
 import os, sys
 import urllib
 
-def get_url():
-	ip_port = raw_input("Server:  <IP>:<port>\n")
+def get_url(url=None):
+	if not url:
+		url = raw_input("\nServer:  <IP>:<port>\n")
 	# check ip_port format
-	return ip_port;
+	if not url.startswith('http'):
+		url = "http://%s" % ( url )
+	return url;
 
 def send( url, data=None ):
 	try:
@@ -14,7 +17,9 @@ def send( url, data=None ):
 			d = urllib2.urlopen(url, data)
 		else:
 			d = urllib2.urlopen(url)
-		return json.loads(d.read())
+		j = json.loads(d.read())
+		print "\n>>>> Server's response:", j
+		return j
 	except urllib2.HTTPError as e:
 		print e.code
 		print e.read()
@@ -22,17 +27,16 @@ def send( url, data=None ):
 	
 def get(key, url=None):
 	if not url:
-		get_url();
+		get_url(url);
 	data = {'key' : key}
 	url_values = urllib.urlencode(data)
-	full_url = 'http://%s?%s' % (url, url_values)
-	print full_url
+	full_url = '%s?%s' % (url, url_values)
 	ret = send(full_url)
 	return ret.get('value',  '')
 
 def put(key, value, url=None):
 	if not url:
-		get_url();
+		get_url(url);
 	data = {'key' : key, 'value': value}
 	enc_data = urllib.urlencode(data)
 	#req = urllib2.Request(url, enc_data)
@@ -42,15 +46,13 @@ def put(key, value, url=None):
 
 def UI(args):
 	if len(args)>1:
-		url = args[1]
+		url = get_url(args[1])
 	else:
 		url = get_url()
-		
-	if not url.startswith('http'):
-		url = "http://%s" % ( url )
+	print url
 
 	while(1):
-		cmd = raw_input("cmd: [G]et/[P]ut: ")
+		cmd = raw_input("cmd: [G]et/[P]ut/[Q]uit: ")
 		if cmd.upper() == 'G':
 			key = raw_input( "Key: " )
 			print "Key:", key 
@@ -69,7 +71,9 @@ def UI(args):
 			else:
 				print "Inserted Key\nKey:", key 
 				print "New Value:", value
-				
+		elif cmd.upper() == 'Q':
+			print 
+			exit(0)
 
 if __name__ == "__main__":
 	UI(sys.argv)

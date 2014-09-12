@@ -1,6 +1,7 @@
 import sqlite3
 import time
 import datetime
+import sys
 
 myConnection = None
 myCursor = None
@@ -16,14 +17,14 @@ def getTime():
 def startConnection():
 	global myCursor, myConnection
 	isSuccess=0;
-	print("[INFO] "+getTime()+": Creating Connection ...")
+	print("[INFO] "+getTime()+": Creating connection to "+dbName+"."+dbTable)
 	try:
 		myConnection = sqlite3.connect('db/'+dbName)
 		myCursor = myConnection.cursor()
 		isSuccess=1
-		print("[INFO] "+getTime()+": Connection Successful!")
+		print("[INFO] "+getTime()+": Successful connected to "+dbName+"."+dbTable)
 	except:
-		print("[ERROR] "+getTime()+": Connection failure!")
+		print("[ERROR] "+getTime()+": Failed to connected to "+dbName+"."+dbTable)
 
 	return isSuccess
 
@@ -43,7 +44,7 @@ def stopConnection():
 
 def get(key):
 	global myCursor, myConnection
-	retFlag=-1
+	retFlag=0
 	# return values
 	# 0  - if key present
 	# 1  - if key not present
@@ -52,19 +53,23 @@ def get(key):
 		startConnection()
 
 	value = ''
+	#print "SRG TEST: key = '",key,"'"
 	try:
 		myCursor.execute("SELECT value from "+dbTable+" where key = '"+key+"'")
-		print myCursor.fetchone()
-		if myCursor.fetchone():
-			value=myCursor.fetchone()[0]
+		#print myCursor.fetchone()
+		#print "SRG TEST: !!!!"
+		d = myCursor.fetchone() 
+		if d:
+			value=d[0]
 			retFlag=0
-			print("[INFO] "+getTime()+": {GET} key found!")
+			print("[INFO] "+getTime()+": {GET} key='"+key+"' found!")
 		else:
 			retFlag=1
-			print("[INFO] "+getTime()+": {GET} key not found!")
-	except:
+			print("[INFO] "+getTime()+": {GET} key='"+key+"' not found!")
+	except :
 		retFlag = -1
-		print("[ERROR] "+getTime()+": {GET} operation failed!")
+		print sys.exec_info()
+		print("[ERROR] "+getTime()+": {GET} operation failed for key='"+key+"'!")
 		
 	return retFlag,value
 
@@ -79,15 +84,19 @@ def put(key,value):
 	if not myCursor:
 		startConnection()
 	try:
+		print("[INFO] "+getTime()+": {PUT} adding key='"+key+"'")
 		retFlag, oldV=get(key)
+		#print "SRG TEST RETUN OF GET : ",retFlag, oldV
 		if retFlag==-1:
 			raise
-		if retFlag==1:
+		elif retFlag==1:
 			myCursor.execute("INSERT INTO "+dbTable+" VALUES ('"+key+"','"+value+"')")
+			print("[INFO] "+getTime()+": {PUT} value insert!")
 		else:
-			myCursor.execute("UPDATE TABLE "+dbTable+" SET value='"+value+"' where key='"+key+"')")	
+			myCursor.execute("UPDATE "+dbTable+" SET value='"+value+"' where key='"+key+"'")	
+			print("[INFO] "+getTime()+": {PUT} value updated!")
 		myConnection.commit()
-		print("[INFO] "+getTime()+": {PUT} value insert!")
+		print("[INFO] "+getTime()+": {PUT} successful")
 	except:
 		print("[ERROR] "+getTime()+": {PUT} failed!")
 		
@@ -95,20 +104,45 @@ def put(key,value):
 
 def unit_test():
 	#UNIT TEST BELOW!
-	startConnection();	
-	ts = time.time()
-	put(datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),"newValue")
-	put("1", "hello")
-	put("2", "world")
-	r, value=get("1")
-	print("Value for Key=1 is "+value)
+	print ""
+	print "*****      TEST 0 START: starting connection"
+	startConnection();
+	print "*****      TEST 0 END"
+	testKey=getTime()
+	print ""
+	print "*****      TEST 1 START: adding an new value"
+	res=put(testKey,"newValue")	
+	print "*****      OUTPUT: ",res
+	print "*****      TEST 1 END"
+	print ""
+	print "*****      TEST 2 START: adding an old value"
+	res=put(testKey,"newValue")	
+	print "*****      OUTPUT: ",res
+	print "*****      TEST 2 END"
+	print ""
+	print "*****      TEST 3 START: get an value that exist"
+	res, value=get("1")
+	print("*****      Value for Key=1 is "+value)
+	print "*****      OUTPUT: ",res
+	print "*****      TEST 3 END"
+	print ""
+	print "*****      TEST 4 START: get an value that does not exist"
+	res, value=get("IdontExist")
+	print("*****      Value for Key=IdontExist is "+value)
+	print "*****      OUTPUT: ",res
+	print "*****      TEST 4 END"
+	print ""
+	print "*****      TEST 5 START: close connection"
 	stopConnection();
-	#testing when connection is closed!
-	r, value=get("2")
-	print("Value for Key=2 is "+value)
-	r, value=get("IdontExist")
-	print("Value for Key=IdontExist is "+value)
+	print "*****      TEST 5 END"
+	print ""
+	print "*****      TEST 6 START: get an value that exist with connection closed!"
+	res, value=get("1")
+	print("*****      Value for Key=1 is "+value)
+	print "*****      OUTPUT: ",res
 	stopConnection();
+	print "*****      TEST 6 END"
+	print ""
 
 if __name__ == '__main__':
 	unit_test()
