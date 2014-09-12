@@ -5,7 +5,7 @@ import urllib
 
 def get_url(url=None):
 	if not url:
-		url = raw_input("Server:  <IP>:<port>\n")
+		url = raw_input("\nServer:  <IP>:<port>\n")
 	# check ip_port format
 	if not url.startswith('http'):
 		url = "http://%s" % ( url )
@@ -18,7 +18,7 @@ def send( url, data=None ):
 		else:
 			d = urllib2.urlopen(url)
 		j = json.loads(d.read())
-		print ">>>> Server's response:", j
+		print "\n>>>> Server's response:", j
 		return j
 	except urllib2.HTTPError as e:
 		print e.code
@@ -31,7 +31,6 @@ def get(key, url=None):
 	data = {'key' : key}
 	url_values = urllib.urlencode(data)
 	full_url = '%s?%s' % (url, url_values)
-	print full_url
 	ret = send(full_url)
 	return ret.get('value',  '')
 
@@ -53,7 +52,7 @@ def UI(args):
 	print url
 
 	while(1):
-		cmd = raw_input("cmd: [G]et/[P]ut: ")
+		cmd = raw_input("cmd: [G]et/[P]ut/[Q]uit: ")
 		if cmd.upper() == 'G':
 			key = raw_input( "Key: " )
 			print "Key:", key 
@@ -72,7 +71,9 @@ def UI(args):
 			else:
 				print "Inserted Key\nKey:", key 
 				print "New Value:", value
-				
+		elif cmd.upper() == 'Q':
+			print 
+			exit(0)
 
 if __name__ == "__main__":
 	UI(sys.argv)
