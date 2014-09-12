@@ -38,7 +38,7 @@ def main():
 	elif  request.method == 'POST':
 		return json.dumps(create_value())
 	else:
-		return json.dumps({'status': 'error', 'message': 'only GET or POST are valid methods'})
+		return json.dumps({'status': 'error', 'message': 'only GET and POST are valid methods'})
 
 if __name__ == "__main__":
 	app.debug = True
