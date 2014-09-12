@@ -3,31 +3,58 @@ from flask import request
 import json
 import dbWorkers
 get_from_db = dbWorkers.get
-put_in_db = dbWorkers.put
+create_in_db = dbWorkers.create
+update_in_db = dbWorkers.update
+
+#insert can't insert an empty value (this will prevent errors)
 
 app = Flask(__name__)
 
 def get_value():
 	key = request.args.get('key', '');
-	return {'key': key, 'value': get_from_db(key)}
+	# assume present
+	status = 1;
+
+	if not key
+		# not present
+		status = 1;
+
+	return  {
+						'return': status,
+						'key': key,
+						'value': get_from_db(key)
+					}
 
 def create_value():
 	key = request.form.get('key', '')
 	value = request.form.get('value', '')
+	status = -1
 
 	if not key or not value: 
-		return {'status': 'error', 'message': 'get() requires a key'}
+		return  {
+							'return': status,
+							'errors': [
+								'get() requires a key'
+							]
+						}
 
 	old_value = get_from_db(key)
 
-	data = {'return': -1, 
-				'key': key,
-				'value': value,
-				'old_value': old_value}
+	if not old_value
+		#1 = the key was not present
+		status = 1
+		create_in_db(key, value)
+	else
+		#0 = the key was present
+		status = 0
+		update_in_db(key, value)
 
-	data['return'] = 0 if old_value else 1
-
-	put_in_db(key, value)
+	data = {
+					'return': status, 
+					'key': key,
+					'value': value,
+					'old_value': old_value
+				}
 
 	return data;
 
