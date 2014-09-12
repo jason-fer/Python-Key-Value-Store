@@ -3,8 +3,8 @@ from flask import request
 import json
 import dbWorkers
 get_from_db = dbWorkers.get
-create_in_db = dbWorkers.create
-update_in_db = dbWorkers.update
+create_in_db = dbWorkers.put
+update_in_db = dbWorkers.put
 
 #insert can't insert an empty value (this will prevent errors)
 
@@ -15,7 +15,7 @@ def get_value():
 	# assume present
 	status = 1;
 
-	if not key
+	if not key:
 		# not present
 		status = 1;
 
@@ -40,11 +40,11 @@ def create_value():
 
 	old_value = get_from_db(key)
 
-	if not old_value
+	if not old_value:
 		#1 = the key was not present
 		status = 1
 		create_in_db(key, value)
-	else
+	else:
 		#0 = the key was present
 		status = 0
 		update_in_db(key, value)
