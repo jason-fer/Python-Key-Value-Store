@@ -6,3 +6,5 @@
 pyvenv/
 db/allData
 *\.\#*
+
+/db/allData
