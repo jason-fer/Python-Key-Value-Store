@@ -4,3 +4,5 @@
 *.pyc
 *.gz
 pyvenv/
+db/allData
+*\.\#*
