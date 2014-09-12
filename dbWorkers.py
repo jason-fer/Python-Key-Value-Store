@@ -9,11 +9,14 @@ myCursor = None
 dbName="allData"
 dbTable="allData" #messedupSomewhere!
 
+# current time for logging
 def getTime():
 	ts = time.time()
 	dt=datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S:%f')
 	return dt
 
+# intiate DB connection
+# returns 1 for success and 0 for failure
 def startConnection():
 	global myCursor, myConnection
 	isSuccess=0;
@@ -28,6 +31,8 @@ def startConnection():
 
 	return isSuccess
 
+# stopping DB connection
+# returns 1 for success and 0 for failure
 def stopConnection():
 	global myCursor, myConnection
 	isClosed=0;
@@ -40,8 +45,9 @@ def stopConnection():
 		print("[INFO] "+getTime()+": Connection Closed!")
 	except:
 		print("[ERROR] "+getTime()+": Failed to close connection!")
+	return isClosed
 		
-
+# get the value f
 def get(key):
 	global myCursor, myConnection
 	retFlag=0
@@ -100,7 +106,7 @@ def put(key,value):
 	except:
 		print("[ERROR] "+getTime()+": {PUT} failed!")
 		
-	return retFlag
+	return retFlag,oldV
 
 def unit_test():
 	#UNIT TEST BELOW!
@@ -111,12 +117,12 @@ def unit_test():
 	testKey=getTime()
 	print ""
 	print "*****      TEST 1 START: adding an new value"
-	res=put(testKey,"newValue")	
+	res,oldV=put(testKey,"newValue")	
 	print "*****      OUTPUT: ",res
 	print "*****      TEST 1 END"
 	print ""
 	print "*****      TEST 2 START: adding an old value"
-	res=put(testKey,"newValue")	
+	res,oldV=put(testKey,"newValue")	
 	print "*****      OUTPUT: ",res
 	print "*****      TEST 2 END"
 	print ""
