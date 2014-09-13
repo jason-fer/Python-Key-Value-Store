@@ -47,23 +47,20 @@ def stopConnection():
 		print("[ERROR] "+getTime()+": Failed to close connection!")
 	return isClosed
 		
-# get the value f
+# get the value of a given key
+# returns retFlags,values
+# retFlags
+# 	0  - if key present
+# 	1  - if key not present
+# 	-1 - failure
 def get(key):
 	global myCursor, myConnection
 	retFlag=0
-	# return values
-	# 0  - if key present
-	# 1  - if key not present
-	# -1 - failure
 	if not myCursor:
 		startConnection()
-
 	value = ''
-	#print "SRG TEST: key = '",key,"'"
 	try:
 		myCursor.execute("SELECT value from "+dbTable+" where key = '"+key+"'")
-		#print myCursor.fetchone()
-		#print "SRG TEST: !!!!"
 		d = myCursor.fetchone() 
 		if d:
 			value=d[0]
@@ -79,20 +76,21 @@ def get(key):
 		
 	return retFlag,value
 
+# inserts/updates the value of a given key
+# returns retFlags,oldV
+# retFlags
+# 	0  - if key present hence updated
+# 	1  - if key not present hence inserted
+# 	-1 - failure
 def put(key,value):
 	global myCursor, myConnection
 	
 	retFlag=-1
-	# return values
-	# 0  - if key present
-	# 1  - if key not present
-	# -1 - failure
 	if not myCursor:
 		startConnection()
 	try:
 		print("[INFO] "+getTime()+": {PUT} adding key='"+key+"'")
 		retFlag, oldV=get(key)
-		#print "SRG TEST RETUN OF GET : ",retFlag, oldV
 		if retFlag==-1:
 			raise
 		elif retFlag==1:
