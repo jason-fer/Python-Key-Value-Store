@@ -82,7 +82,7 @@ def test_put(url, tc):
 
 	count = 0
 	maxCount = 50
-	print '\nRunning a '+ str(maxCount) +' random key and value updates'
+	print '\nRunning '+ str(maxCount) +' random key and value updates'
 	while count < maxCount:
 		# first group of tests
 		# print '\nChecking a random key and value'
