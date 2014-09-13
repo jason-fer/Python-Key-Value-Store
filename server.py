@@ -30,7 +30,6 @@ def check_value(method_name, value):
 		return  False, { 'return': -1, 'errors': [ method_name + ' value was ' 
 		+ str(value_length) + ' bytes. This exceeds the 2048 byte limit'] }
 
-	return False, {'bleh': len(value.encode('utf-8'))}
 	# the value is OK
 	return True, ''
 
