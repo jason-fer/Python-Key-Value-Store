@@ -2,6 +2,18 @@ import urllib2
 import json
 import os, sys
 import urllib
+import time
+import datetime
+import string
+import random
+
+
+# current time for logging
+def getTime():
+        ts = time.time()
+        dt=datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S:%f')
+        return dt
+
 
 def get_url(url=None):
 	if not url:
@@ -18,6 +30,7 @@ def send( url, data=None ):
 		else:
 			d = urllib2.urlopen(url)
 		j = json.loads(d.read())
+		#print "SRG D-",d
 		#print "\n>>>> Server's response:", j
 		return j
 	except urllib2.HTTPError as e:
@@ -32,6 +45,7 @@ def get(key, url=None):
 	url_values = urllib.urlencode(data)
 	full_url = '%s?%s' % (url, url_values)
 	ret = send(full_url)
+	#print "URL: ",full_url
 	return ret.get('value',  '')
 
 def put(key, value, url=None):
@@ -40,6 +54,7 @@ def put(key, value, url=None):
 	data = {'key' : key, 'value': value}
 	enc_data = urllib.urlencode(data)
 	#req = urllib2.Request(url, enc_data)
+	print url
 	ret = send(url, enc_data);
 	return ret.get('old_value',''), ret.get('return', 0)
 
@@ -74,8 +89,35 @@ def UI(args):
 		elif cmd.upper() == 'Q':
 			print 
 			exit(0)
+def srgUI(args):	
+        if len(args)>1:
+                url = get_url(args[1])
+        else:
+                url = get_url()
+        print url
+	k=0	
+	while(1):
+		k=k+1
+		value=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(30))
+		value='value_inserted_by_SRG_THE_GREAT: >>> ... '+value+'...'+str(k)+'...PS:Saikat is the best Fantasy Football Player!!!'
+		key='SRG_THE_GREAT@'+getTime()
+                #key=k
+		o_val, ret = put(key,value,url)
+		if ret not in [0,1]:
+			print "error"
+		elif ret == 0:
+			print "Updated key\nKey:",key
+			print "Old Value:", o_val
+			print "New Value:", value
+		else:
+			print "Inserted key\Key:", key
+			print "New Value:", value
+		if k%1000==0:
+			print "Done Inserting 1000 values"
+			exit(0)
+			
 
 if __name__ == "__main__":
-	UI(sys.argv)
+	srgUI(sys.argv)
 		
 	
