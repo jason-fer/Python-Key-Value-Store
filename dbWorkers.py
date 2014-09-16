@@ -87,22 +87,11 @@ def getAll():
     if not myCursor:
         startConnection()
     value = ''
-    try:
-        myCursor.execute("SELECT key,value from " + dbTable)
-        d = myCursor.fetchone()
-        if d:
-            value = d[0]
-            retFlag = 0
-            print("[INFO] " + getTime() + ": {GET} key='" + key + "' found!")
-        else:
-            retFlag = 1
-            print("[INFO] " + getTime() + ": {GET} key='" + key + "' not found!")
-    except:
-        retFlag = -1
-        print sys.exec_info()
-        print("[ERROR] " + getTime() + ": {GET} operation failed for key='" + key + "'!")
-
-    return retFlag, value
+    #try:
+    myCursor.execute("SELECT key,value from " + dbTable)
+    print [int(record[0]) for record in myCursor.fetchall()]
+    #d = myCursor.fetchone()
+    #print d
 
 
 # inserts/updates the value of a given key
@@ -135,6 +124,28 @@ def put(key, value):
 
     return retFlag, oldV
 
+
+def delete(key)
+    global myCursor, myConnection
+    retFlag=-1
+    if not myCursor:
+        startConnection()
+    try:
+        print("[INFO] " + getTime() + ": {DELETE} deleting key='" + key + "'")
+        retFlag, oldV = get(key)
+        if retFlag == -1:
+            raise
+        elif retFlag == 0:
+            myCursor.execute("DELETE FROM " + dbTable + " WHERE key='" + key + "'")
+            print("[INFO] " + getTime() + ": {DELETE} value deleted!")
+        else:
+            print("[INFO] " + getTime() + ": {DELETE} key to be deleted not found.")
+        myConnection.commit()
+        print("[INFO] " + getTime() + ": {DELETE} successful")
+    except:
+        print("[ERROR] " + getTime() + ": {DELETE} failed!")
+
+    return retFlag, oldV
 
 def unit_test():
     #UNIT TEST BELOW!
@@ -174,6 +185,9 @@ def unit_test():
     res, value = get("1")
     print("*****      Value for Key=1 is " + value)
     print "*****      OUTPUT: ", res
+    print "SRG TEST >>>>"
+    getAll()    
+    print "<<<<< SRG TEST"
     stopConnection();
     print "*****      TEST 6 END"
     print ""
