@@ -28,6 +28,7 @@ def getDate():
 # print std message to console
 def msg(type,method,message,IP=None):
     global logFileObj
+    opType="LOGGING"
     if not IP:
         IP="<client_unknown>"
     dt=getDate()
@@ -35,25 +36,30 @@ def msg(type,method,message,IP=None):
     logFile=logParentDir+'/'+dt+".log"
     if not os.path.isdir(logParentDir):
         print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|" \
-        +"LOGGING|creating parent log dir")
+        +opType+"|creating parent log dir")
         try:
             os.makedirs(logParentDir)
             print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|" \
-            +"LOGGING|parent log folder created: "+logParentDir)
+            +opType+"|parent log folder created: "+logParentDir)
         except:
-            print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|parent log  folder could not be created at "+logParentDir)
+            print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|"+ \
+            opType+"|parent log  folder could not be created at "+logParentDir)
     if not logFileObj:
         if not os.path.exists(logFile):
-            print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|creating daily log file: "+logFile)
+            print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|"+ \
+            opType+"|creating daily log file: "+logFile)
             try:
                 logFileObj=open(logFile,"a")
-                print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|daily log file created: "+logFile)
+                print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|" \
+                +opType+"|daily log file created: "+logFile)
             except:
-                print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|daily log file "+logFile+" cannot be created!!!")
+                print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|" \
+                +opType+"|daily log file "+logFile+" cannot be created!!!")
     try:
         logFileObj=open(logFile,"a")
     except:
-        print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|daily log file "+logFile+" cannot be accessed")
+        print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|" \
+        +opType+"|daily log file "+logFile+" cannot be accessed")
     logMsg=getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+IP+"|"+method+"|"+message
     if logFileObj:
         logFileObj.write(logMsg+"\n")
