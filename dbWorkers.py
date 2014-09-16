@@ -125,7 +125,7 @@ def put(key, value):
     return retFlag, oldV
 
 
-def delete(key)
+def delete(key):
     global myCursor, myConnection
     retFlag=-1
     if not myCursor:
@@ -177,19 +177,28 @@ def unit_test():
     print "*****      OUTPUT: ", res
     print "*****      TEST 4 END"
     print ""
-    print "*****      TEST 5 START: close connection"
-    stopConnection();
+    print "*****      TEST 5 START: delete a value that does not exist"
+    res, value = delete("IdontExist")
+    print("*****      Old Value for Key=IdontExist is " + value)
+    print "*****      OUTPUT: ", res
     print "*****      TEST 5 END"
+    print ""    
+    print "*****      TEST 6 START: delete a value that exists"
+    res, value = delete(testKey)
+    print("*****      Old Value for Key="+testKey+" is " + value)
+    print "*****      OUTPUT: ", res
+    print "*****      TEST 6 END"
+    print ""  
+    print "*****      TEST 7 START: close connection"
+    stopConnection();
+    print "*****      TEST 7 END"
     print ""
-    print "*****      TEST 6 START: get an value that exist with connection closed!"
+    print "*****      TEST 8 START: get an value that exist with connection closed!"
     res, value = get("1")
     print("*****      Value for Key=1 is " + value)
     print "*****      OUTPUT: ", res
-    print "SRG TEST >>>>"
-    getAll()    
-    print "<<<<< SRG TEST"
     stopConnection();
-    print "*****      TEST 6 END"
+    print "*****      TEST 8 END"
     print ""
 
 
