@@ -4,12 +4,14 @@ import datetime
 import sys
 import os
 
+clientIP=""
 myConnection = None
 myCursor = None
 msgType = ["INFO","ERROR"]
 
 dbName = "allData"
-dbTable = "allData"  #messedupSomewhere!
+dbTable = "allData"
+
 
 # current time for logging
 def getTime():
@@ -17,12 +19,15 @@ def getTime():
     dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d|%H:%M:%S|%f')
     return dt
 
-def msg(type,method,message):
-    print(getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+method+"|"+message) 
+# print std message to console
+def msg(type,method,message,IP=None):
+    if not IP:
+        IP="<client_unknown>"
+    print(getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+IP+"|"+method+"|"+message) 
 
 # intiate DB connection
 # returns 1 for success and 0 for failure
-def startConnection():
+def startConnection(IP=None):
     global myCursor, myConnection
     isSuccess = 0;
     msg(0,"START_DB","Creating connection to " + dbName + "." + dbTable)
@@ -39,7 +44,7 @@ def startConnection():
 
 # stopping DB connection
 # returns 1 for success and 0 for failure
-def stopConnection():
+def stopConnection(IP=None):
     global myCursor, myConnection
     opType="STOP_DB"
     isClosed = 0;
@@ -61,7 +66,7 @@ def stopConnection():
 # 	0  - if key present
 # 	1  - if key not present
 # 	-1 - failure
-def get(key):
+def get(key,IP=None):
     global myCursor, myConnection
     retFlag = 0
     opType="GET"
@@ -85,20 +90,38 @@ def get(key):
 
     return retFlag, value
 
-# INCOMPLETE
-def getAll():
-    global myCursor, myConnection
 
+# get all the key-values pairs
+# returns retFlags,count,allData
+# retFlags
+#       0  - if at least 1 present
+#       1  - if no keys present
+#       -1 - failure
+# count: number of key-values pairs found
+# allData: 2d array with key-value pairs 
+def getAll(IP=None):
+    global myCursor, myConnection
+    opType="GET_ALL"
+    allData=[]
+    count=0
     retFlag = -1
     if not myCursor:
         startConnection()
     value = ''
-    #try:
-    myCursor.execute("SELECT key,value from " + dbTable)
-    print [int(record[0]) for record in myCursor.fetchall()]
-    #d = myCursor.fetchone()
-    #print d
-
+    try:
+        for row in myCursor.execute("SELECT * FROM " + dbTable):
+            allData.append((row[0],row[1]))
+            count=count+1
+        msg(0,opType,str(count)+" row(s) fetched")
+        if count==0:
+            retFlag=1
+        else:
+            retFlag=0
+    except:
+        retFlag=-1
+        print sys.exec_info()
+        msg(1,opType,"getting all key-value pairs failed!")
+    return retFlag,count,allData
 
 # inserts/updates the value of a given key
 # returns retFlags,oldV
@@ -106,7 +129,7 @@ def getAll():
 # 	0  - if key present hence updated
 # 	1  - if key not present hence inserted
 # 	-1 - failure
-def put(key, value):
+def put(key, value, IP=None):
     global myCursor, myConnection
     opType="PUT"
     retFlag = -1
@@ -137,7 +160,7 @@ def put(key, value):
 #       0  - if key present hence deleted
 #       1  - if key not present hence not deleted
 #       -1 - failure
-def delete(key):
+def delete(key, IP=None):
     global myCursor, myConnection
     opType="DELETE"
     retFlag=-1
@@ -202,16 +225,25 @@ def unit_test():
     print "*****      OUTPUT: ", res
     print "*****      TEST 6 END"
     print ""  
-    print "*****      TEST 7 START: close connection"
-    stopConnection();
-    print "*****      TEST 7 END"
+    print "*****      TEST 8 START: get all (key,value)"
+    res, count, allData = getAll()
+    localCount=0
+    for row in allData:
+        localCount=localCount+1
+        print("*****            Key='"+row[0]+"' ---> value='"+row[1]+"' ... ["+str(localCount)+"/"+str(count)+"]")
+    print "*****      OUTPUT: ", res
+    print "*****      TEST 8 END"
     print ""
-    print "*****      TEST 8 START: get an value that exist with connection closed!"
+    print "*****      TEST 8 START: close connection"
+    stopConnection();
+    print "*****      TEST 8 END"
+    print ""
+    print "*****      TEST 9 START: get an value that exist with connection closed!"
     res, value = get("1")
     print("*****      Value for Key=1 is " + value)
     print "*****      OUTPUT: ", res
     stopConnection();
-    print "*****      TEST 8 END"
+    print "*****      TEST 9 END"
     print ""
 
 

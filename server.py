@@ -40,18 +40,35 @@ def check_value(method_name, value):
 	# the value is OK
 	return True, ''
 
+def delete_value():
+	key = request.form.get('key', '')
+
+	#check the key
+	ok, error_message = check_key('delete()', key)
+	if not ok:
+		return error_message, 500
+
+	status, old_value = delete_in_db(key)
+
+	# system error = 500 server error
+	# key wasn't present = 201 created (insert)
+	if status == 1 or status == 0:
+		return  {'old_value': old_value}, 200
+	else: #status == -1
+		return  {'errors': [ 'unknown database error'] }, 500
+
 def get_value():
 	client_ip = request.remote_addr
 	key = request.args.get('key', '');
-
 	#check the key
-	ok, error_message = check_key('get()', key);
+	ok, error_message = check_key('get()', key)
 	if not ok:
 		# 500 = error
 		return error_message, 500
 
 	# retrieve the value
 	status, value = get_from_db(key, client_ip);
+
 	# key wasn't present = 404 not found
 	if status == 1:
 		return  {'value': '', 'errors': [ 'key not found'] }, 404
@@ -68,12 +85,12 @@ def put_value():
 	value = request.form.get('value', '')
 
 	#check the key
-	ok, error_message = check_key('put()', key);
+	ok, error_message = check_key('put()', key)
 	if not ok:
 		return error_message, 500
 
 	#check the value
-	ok, error_message = check_value('put()', value);
+	ok, error_message = check_value('put()', value)
 	if not ok:
 		return error_message, 500
 
@@ -112,6 +129,7 @@ def delete_key():
 	else:
 		return  {'value': value }, 200
 	
+
 @app.route('/', methods=['GET', 'PUT', 'DELETE'])
 def main():
 	if request.method == 'GET':
@@ -121,11 +139,13 @@ def main():
 	elif request.method == 'PUT':
 		data, http_status = put_value()
 		return json.dumps(data), http_status
+
 	if request.method == 'DELETE':
 		data, http_status = delete_key() 
 		return json.dumps(data), http_status
 	else:
 		return json.dumps({'errors':['Not implemented']}), 405
+
 
 if __name__ == "__main__":
 	app.debug = True
