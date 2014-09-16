@@ -79,7 +79,7 @@ def get(key):
 
     return retFlag, value
 
-
+# INCOMPLETE
 def getAll():
     global myCursor, myConnection
 
