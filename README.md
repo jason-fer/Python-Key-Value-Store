@@ -9,7 +9,7 @@
 +-------------------------------------------------------------------------------
 
 Our Group:
-Saikat Rafael Gomes
+Saikat Raphael Gomes
 Jason Feriante
 Rahul Chatterjee
 
