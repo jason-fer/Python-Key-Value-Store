@@ -1,4 +1,4 @@
-import urllib2, json, os, sys, urllib, unittest, string, random
+import urllib2, json, os, sys, urllib, unittest, string, random, requests
 
 def random_string(size=8, chars=string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
@@ -14,16 +14,21 @@ def get_url(url=None):
 def send(url, data=None ):
 	try:
 		if data:
-			d = urllib2.urlopen(url, data)
+			r = requests.put(url, data)
+			j = r.json()
 		else:
 			d = urllib2.urlopen(url)
-		j = json.loads(d.read())
+			j = json.loads(d.read())
+
 		# print ">>>> Server's response:", j
 		return j
 	except urllib2.HTTPError as e:
-		print e.code
 		print e.read()
-	
+		return e.code
+	except requests.RequestException as e:
+		print e.read()
+		return e.code
+
 def get(key, url=None):
 	if not url:
 		get_url(url)
@@ -72,11 +77,11 @@ def test_get(url, tc):
 
 	print '\nChecking a get with a blank key'
 	rs = get('', url)
-	tc.assertTrue(test_has_error(rs, tc, True))
+	tc.assertEqual(rs, 500)
 
 	print '\nChecking a get with a key over 128 bytes'
 	rs = get(random_string(129), url)
-	tc.assertTrue(test_has_error(rs, tc, True))
+	tc.assertEqual(rs, 500)
 
 def test_put(url, tc):
 
