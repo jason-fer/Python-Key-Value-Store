@@ -9,7 +9,7 @@ myCursor = None
 msgType = ["INFO","ERROR"]
 
 dbName = "allData"
-dbTable = "allData"  #messedupSomewhere!
+dbTable = "allData"
 
 # current time for logging
 def getTime():
@@ -17,6 +17,7 @@ def getTime():
     dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d|%H:%M:%S|%f')
     return dt
 
+# print std message to console
 def msg(type,method,message):
     print(getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+method+"|"+message) 
 
@@ -85,20 +86,38 @@ def get(key):
 
     return retFlag, value
 
-# INCOMPLETE
+
+# get all the key-values pairs
+# returns retFlags,count,allData
+# retFlags
+#       0  - if at least 1 present
+#       1  - if no keys present
+#       -1 - failure
+# count: number of key-values pairs found
+# allData: 2d array with key-value pairs 
 def getAll():
     global myCursor, myConnection
-
+    opType="GET_ALL"
+    allData=[]
+    count=0
     retFlag = -1
     if not myCursor:
         startConnection()
     value = ''
-    #try:
-    myCursor.execute("SELECT key,value from " + dbTable)
-    print [int(record[0]) for record in myCursor.fetchall()]
-    #d = myCursor.fetchone()
-    #print d
-
+    try:
+        for row in myCursor.execute("SELECT * FROM " + dbTable):
+            allData.append((row[0],row[1]))
+            count=count+1
+        msg(0,opType,str(count)+" row(s) fetched")
+        if count==0:
+            retFlag=1
+        else:
+            retFlag=0
+    except:
+        retFlag=-1
+        print sys.exec_info()
+        msg(1,opType,"getting all key-value pairs failed!")
+    return retFlag,count,allData
 
 # inserts/updates the value of a given key
 # returns retFlags,oldV
@@ -202,16 +221,25 @@ def unit_test():
     print "*****      OUTPUT: ", res
     print "*****      TEST 6 END"
     print ""  
-    print "*****      TEST 7 START: close connection"
-    stopConnection();
-    print "*****      TEST 7 END"
+    print "*****      TEST 8 START: get all (key,value)"
+    res, count, allData = getAll()
+    localCount=0
+    for row in allData:
+        localCount=localCount+1
+        print("*****            Key='"+row[0]+"' ---> value='"+row[1]+"' ... ["+str(localCount)+"/"+str(count)+"]")
+    print "*****      OUTPUT: ", res
+    print "*****      TEST 8 END"
     print ""
-    print "*****      TEST 8 START: get an value that exist with connection closed!"
+    print "*****      TEST 8 START: close connection"
+    stopConnection();
+    print "*****      TEST 8 END"
+    print ""
+    print "*****      TEST 9 START: get an value that exist with connection closed!"
     res, value = get("1")
     print("*****      Value for Key=1 is " + value)
     print "*****      OUTPUT: ", res
     stopConnection();
-    print "*****      TEST 8 END"
+    print "*****      TEST 9 END"
     print ""
 
 
