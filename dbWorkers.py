@@ -72,7 +72,7 @@ def get(key):
         myCursor.execute("SELECT value from " + dbTable + " where key = '" + key + "'")
         d = myCursor.fetchone()
         if d:
-            value = d[0]
+            value = d[0].strip()
             retFlag = 0
             msg(0,opType,"key='" + key + "' found!")
         else:

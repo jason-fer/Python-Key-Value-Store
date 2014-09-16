@@ -2,67 +2,116 @@ import urllib2
 import json
 import os, sys
 import urllib
+import requests 
 
-def get_url(url=None):
-	if not url:
-		url = raw_input("\nServer:  <IP>:<port>\n")
+url = None
+def get_url(l_url=None):
+	global url
+	if url: return
+	if not l_url:
+		l_url = raw_input("\nServer:  <IP>:<port>\n")
 	# check ip_port format
-	if not url.startswith('http'):
-		url = "http://%s" % ( url )
-	return url;
+	if not l_url.startswith('http'):
+		l_url = "http://%s" % ( l_url )
+	url = l_url
 
-def send( url, data=None ):
+
+def kv739_init(url):
 	try:
-		if data:
-			d = urllib2.urlopen(url, data)
-		else:
-			d = urllib2.urlopen(url)
-		j = json.loads(d.read())
-		#print "\n>>>> Server's response:", j
-		return j
-	except urllib2.HTTPError as e:
-		print e.code
-		print e.read()
+		urllib2.urlopen(url)
+		return 0 # success
+	except urllib2.HTTPError, e:
+		if e.code==500:
+			return 0
+	except urllib2.URLError, e:
+		print('URLError', e.args)
+	return -1 # failure
 
-	
-def get(key, url=None):
-	if not url:
-		get_url(url);
+def kv739_get(key):
 	data = {'key' : key}
 	url_values = urllib.urlencode(data)
 	full_url = '%s?%s' % (url, url_values)
-	ret = send(full_url)
-	return ret.get('value',  '')
+	try:
+		d = requests.get(full_url)
+		if d.status_code == 404:
+			return 1, None # the key does not exist
+		elif d.status_code == 200:
+			r = json.loads(d.content)
+			value = r.get('value', '')
+			return 0, value
+		elif d.status_code == 500:
+			return -1, "ERROR!" 
+	except requests.ConnectionError, e:
+		return -1, "ERROR: %s" % e.error
 
-def put(key, value, url=None):
-	if not url:
-		get_url(url);
+
+def kv739_put(key, value):
 	data = {'key' : key, 'value': value}
 	enc_data = urllib.urlencode(data)
-	#req = urllib2.Request(url, enc_data)
-	ret = send(url, enc_data);
-	return ret.get('old_value',''), ret.get('return', 0)
-
-
-def UI(args):
-	if len(args)>1:
-		url = get_url(args[1])
+	ret = requests.put(url, data);
+	if ret.status_code == 500:
+		return -1
+	elif ret.status_code == 200:
+		r = json.loads(ret.content)
+		old_value = ''			
+		try:
+			old_value = r['old_value']
+			return 0, old_value
+		except KeyError:
+			print "What the fuck server. Bitch/Son of a bitch!! "
+			return -1, ''
+	elif ret.status_code == 201:
+		return 1, old_value
 	else:
-		url = get_url()
+		print "WTF!!!"
+		return -1, old_value
+
+def kv739_delete(key):
+	data = {'key' : key}
+	url_values = urllib.urlencode(data)
+	full_url = '%s?%s' % (url, url_values)
+	try:
+		d = requests.delete(full_url)
+		if d.status_code == 404:
+			return 1, None # the key does not exist
+		elif d.status_code == 200:
+			r = json.loads(d.content)
+			value = r.get('value', '')
+			return 0, value
+		elif d.status_code == 500:
+			return -1, "ERROR!"
+	except requests.ConnectionError, e:
+		return -1, "ERROR: %s" % e.error
+	
+def UI(args):
+	global url
+	if len(args)>1:
+		get_url(args[1])
+	else:
+		get_url()
 	print url
+	con = kv739_init(url)
+	if con==-1:
+		print "Connection refused!"
+		exit(0);
+	else:
+		print "Connection successful!"
+
 
 	while(1):
-		cmd = raw_input("cmd: [G]et/[P]ut/[Q]uit: ")
+		cmd = raw_input("cmd: [G]et/[P]ut/[Q]uit/[D]elete: ")
 		if cmd.upper() == 'G':
 			key = raw_input( "Key: " )
 			print "Key:", key 
-			print "Value:", get(key, url)
+			r, val = kv739_get(key)
+			print "Code:", r
+			print "Value:", val
 		elif cmd.upper() == 'P':
 			key = raw_input( "Key: " )
 			print "Values:",
 			value = sys.stdin.readline()
-			o_val, ret = put(key, value, url)
-			if ret not in [0,1]:
+			ret, o_val = kv739_put(key, value)
+			if ret not in [0,1,-1]:
 				print "Wrong return value:", ret
 			elif ret == 0:
 				print "Updated Key\nKey:", key 
@@ -71,6 +120,14 @@ def UI(args):
 			else:
 				print "Inserted Key\nKey:", key 
 				print "New Value:", value
+		elif cmd.upper() == 'D':
+			key = raw_input( "Key: " )
+			print "Key:", key 
+			ret, o_val = kv739_delete(key)
+			# delete the shit
+			print "Code:", ret
+			if ret == 200:
+				print "O_Val:", o_val
 		elif cmd.upper() == 'Q':
 			print 
 			exit(0)

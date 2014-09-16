@@ -8,8 +8,10 @@ import dbWorkers
 
 get_from_db = dbWorkers.get
 put_in_db = dbWorkers.put
+delete_in_db = dbWorkers.delete
 app = Flask(__name__)
 
+client_ip = ''
 def check_key(method_name, key):
 	# throw error if there's no key
 	if not key: 
@@ -39,6 +41,7 @@ def check_value(method_name, value):
 	return True, ''
 
 def get_value():
+	client_ip = request.remote_addr
 	key = request.args.get('key', '');
 
 	#check the key
@@ -48,8 +51,7 @@ def get_value():
 		return error_message, 500
 
 	# retrieve the value
-	status, value = get_from_db(key);
-
+	status, value = get_from_db(key, client_ip);
 	# key wasn't present = 404 not found
 	if status == 1:
 		return  {'value': '', 'errors': [ 'key not found'] }, 404
@@ -61,6 +63,7 @@ def get_value():
 		return  {'value': value }, 200
 
 def put_value():
+	client_ip = request.remote_addr
 	key = request.form.get('key', '')
 	value = request.form.get('value', '')
 
@@ -74,7 +77,7 @@ def put_value():
 	if not ok:
 		return error_message, 500
 
-	status, old_value = put_in_db(key, value);
+	status, old_value = put_in_db(key, value, client_ip);
 
 	# key wasn't present = 201 created (insert)
 	if status == 1:
@@ -86,7 +89,30 @@ def put_value():
 	else:
 		return  {'value': value, 'old_value': old_value}, 200
 
-@app.route('/', methods=['GET', 'PUT'])
+def delete_key():
+	client_ip = request.remote_addr
+	key = request.args.get('key', '');
+
+	#check the key
+	ok, error_message = check_key('get()', key);
+	if not ok:
+		# 500 = error
+		return error_message, 500
+
+	# retrieve the value
+	status, value = delete_in_db(key, client_ip);
+
+	# key wasn't present = 404 not found
+	if status == 1:
+		return  {'value': '', 'errors': [ 'key not found'] }, 404
+	# system error = 500 server error
+	elif status == -1:
+		return  {'value': value, 'errors': [ 'unknown database error'] }, 500
+	# key was present = 200 ok
+	else:
+		return  {'value': value }, 200
+	
+@app.route('/', methods=['GET', 'PUT', 'DELETE'])
 def main():
 	if request.method == 'GET':
 		data, http_status = get_value() 
@@ -95,7 +121,9 @@ def main():
 	elif request.method == 'PUT':
 		data, http_status = put_value()
 		return json.dumps(data), http_status
-
+	if request.method == 'DELETE':
+		data, http_status = delete_key() 
+		return json.dumps(data), http_status
 	else:
 		return json.dumps({'errors':['Not implemented']}), 405
 
