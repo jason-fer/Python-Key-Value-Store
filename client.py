@@ -49,11 +49,11 @@ def kv739_put(key, value):
 	data = {'key' : key, 'value': value}
 	enc_data = urllib.urlencode(data)
 	ret = requests.put(url, data);
+	old_value = ''			
 	if ret.status_code == 500:
 		return -1
 	elif ret.status_code == 200:
 		r = json.loads(ret.content)
-		old_value = ''			
 		try:
 			old_value = r['old_value']
 			return 0, old_value

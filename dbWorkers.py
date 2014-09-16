@@ -34,10 +34,12 @@ def msg(type,method,message,IP=None):
     logParentDir='log'
     logFile=logParentDir+'/'+dt+".log"
     if not os.path.isdir(logParentDir):
-        print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|creating parent log dir")
+        print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|" \
+        +"LOGGING|creating parent log dir")
         try:
             os.makedirs(logParentDir)
-            print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|parent log folder created: "+logParentDir)
+            print(getTime()+"|"+msgType[0]+"|"+str(os.getpid())+"|"+IP+"|" \
+            +"LOGGING|parent log folder created: "+logParentDir)
         except:
             print(getTime()+"|"+msgType[1]+"|"+str(os.getpid())+"|"+IP+"|"+"LOGGING|parent log  folder could not be created at "+logParentDir)
     if not logFileObj:
