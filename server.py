@@ -97,7 +97,7 @@ def main():
 		return json.dumps(data), http_status
 
 	else:
-		return json.dumps({'errors':['Not implemented']}), 404
+		return json.dumps({'errors':['Not implemented']}), 405
 
 if __name__ == "__main__":
 	app.debug = True
