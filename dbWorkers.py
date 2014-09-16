@@ -80,6 +80,31 @@ def get(key):
     return retFlag, value
 
 
+def getAll():
+    global myCursor, myConnection
+
+    retFlag = -1
+    if not myCursor:
+        startConnection()
+    value = ''
+    try:
+        myCursor.execute("SELECT key,value from " + dbTable)
+        d = myCursor.fetchone()
+        if d:
+            value = d[0]
+            retFlag = 0
+            print("[INFO] " + getTime() + ": {GET} key='" + key + "' found!")
+        else:
+            retFlag = 1
+            print("[INFO] " + getTime() + ": {GET} key='" + key + "' not found!")
+    except:
+        retFlag = -1
+        print sys.exec_info()
+        print("[ERROR] " + getTime() + ": {GET} operation failed for key='" + key + "'!")
+
+    return retFlag, value
+
+
 # inserts/updates the value of a given key
 # returns retFlags,oldV
 # retFlags
