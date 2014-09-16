@@ -2,9 +2,11 @@ import sqlite3
 import time
 import datetime
 import sys
+import os
 
 myConnection = None
 myCursor = None
+msgType = ["INFO","ERROR"]
 
 dbName = "allData"
 dbTable = "allData"  #messedupSomewhere!
@@ -12,23 +14,25 @@ dbTable = "allData"  #messedupSomewhere!
 # current time for logging
 def getTime():
     ts = time.time()
-    dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S:%f')
+    dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d|%H:%M:%S|%f')
     return dt
 
+def msg(type,method,message):
+    print(getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+method+"|"+message) 
 
 # intiate DB connection
 # returns 1 for success and 0 for failure
 def startConnection():
     global myCursor, myConnection
     isSuccess = 0;
-    print("[INFO] " + getTime() + ": Creating connection to " + dbName + "." + dbTable)
+    msg(0,"START_DB","Creating connection to " + dbName + "." + dbTable)
     try:
         myConnection = sqlite3.connect('db/' + dbName)
         myCursor = myConnection.cursor()
         isSuccess = 1
-        print("[INFO] " + getTime() + ": Successful connected to " + dbName + "." + dbTable)
+        msg(0,"START_DB","Successful connected to " + dbName + "." + dbTable)
     except:
-        print("[ERROR] " + getTime() + ": Failed to connected to " + dbName + "." + dbTable)
+        msg(1,"START_DB","Failed to connected to " + dbName + "." + dbTable)
 
     return isSuccess
 
@@ -37,16 +41,17 @@ def startConnection():
 # returns 1 for success and 0 for failure
 def stopConnection():
     global myCursor, myConnection
+    opType="STOP_DB"
     isClosed = 0;
-    print("[INFO] " + getTime() + ": Closing Connection ...")
+    msg(0,opType,"Closing connection to " + dbName + "." + dbTable)
     try:
         myConnection.close()
         myConnection = None
         myCursor = None
         isClosed = 1
-        print("[INFO] " + getTime() + ": Connection Closed!")
+        msg(0,opType,"Connection closed to " + dbName + "." + dbTable)
     except:
-        print("[ERROR] " + getTime() + ": Failed to close connection!")
+        msg(1,opType,"Failed to close connection to " + dbName + "." + dbTable)
     return isClosed
 
 
@@ -59,6 +64,7 @@ def stopConnection():
 def get(key):
     global myCursor, myConnection
     retFlag = 0
+    opType="GET"
     if not myCursor:
         startConnection()
     value = ''
@@ -68,14 +74,14 @@ def get(key):
         if d:
             value = d[0]
             retFlag = 0
-            print("[INFO] " + getTime() + ": {GET} key='" + key + "' found!")
+            msg(0,opType,"key='" + key + "' found!")
         else:
             retFlag = 1
-            print("[INFO] " + getTime() + ": {GET} key='" + key + "' not found!")
+            msg(0,opType,"key='" + key + "' not found!")
     except:
         retFlag = -1
         print sys.exec_info()
-        print("[ERROR] " + getTime() + ": {GET} operation failed for key='" + key + "'!")
+        msg(1,opType,"operation failed for key='" + key + "'!")
 
     return retFlag, value
 
@@ -102,48 +108,55 @@ def getAll():
 # 	-1 - failure
 def put(key, value):
     global myCursor, myConnection
-
+    opType="PUT"
     retFlag = -1
     if not myCursor:
         startConnection()
     try:
-        print("[INFO] " + getTime() + ": {PUT} adding key='" + key + "'")
+        msg(0,opType,"adding key='" + key + "' & value='"+value+"'")
         retFlag, oldV = get(key)
         if retFlag == -1:
             raise
         elif retFlag == 1:
             myCursor.execute("INSERT INTO " + dbTable + " VALUES ('" + key + "','" + value + "')")
-            print("[INFO] " + getTime() + ": {PUT} value insert!")
+            msg(0,opType,"value='"+value+"' insert!")
         else:
             myCursor.execute("UPDATE " + dbTable + " SET value='" + value + "' where key='" + key + "'")
-            print("[INFO] " + getTime() + ": {PUT} value updated!")
+            msg(0,opType,"value updated from '"+oldV+"' to '"+value+"'")
         myConnection.commit()
-        print("[INFO] " + getTime() + ": {PUT} successful")
+        msg(0,opType,"successful")
     except:
-        print("[ERROR] " + getTime() + ": {PUT} failed!")
+        msg(1,opType,"failed!")
 
     return retFlag, oldV
 
 
+# deletes a key-value pair if found
+# returns retFlags,oldV
+# retFlags
+#       0  - if key present hence deleted
+#       1  - if key not present hence not deleted
+#       -1 - failure
 def delete(key):
     global myCursor, myConnection
+    opType="DELETE"
     retFlag=-1
     if not myCursor:
         startConnection()
     try:
-        print("[INFO] " + getTime() + ": {DELETE} deleting key='" + key + "'")
+        msg(0,opType,"deleting key='" + key + "'")
         retFlag, oldV = get(key)
         if retFlag == -1:
             raise
         elif retFlag == 0:
             myCursor.execute("DELETE FROM " + dbTable + " WHERE key='" + key + "'")
-            print("[INFO] " + getTime() + ": {DELETE} value deleted!")
+            msg(0,opType,"value='"+oldV+"' deleted!")
         else:
-            print("[INFO] " + getTime() + ": {DELETE} key to be deleted not found.")
+            msg(0,opType,"key to be deleted not found.")
         myConnection.commit()
-        print("[INFO] " + getTime() + ": {DELETE} successful")
+        msg(0,opType,"successful")
     except:
-        print("[ERROR] " + getTime() + ": {DELETE} failed!")
+        msg(1,opType,"failed!")
 
     return retFlag, oldV
 
