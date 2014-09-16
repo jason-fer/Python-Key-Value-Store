@@ -4,12 +4,14 @@ import datetime
 import sys
 import os
 
+clientIP=""
 myConnection = None
 myCursor = None
 msgType = ["INFO","ERROR"]
 
 dbName = "allData"
 dbTable = "allData"
+
 
 # current time for logging
 def getTime():
@@ -18,12 +20,14 @@ def getTime():
     return dt
 
 # print std message to console
-def msg(type,method,message):
-    print(getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+method+"|"+message) 
+def msg(type,method,message,IP=None):
+    if not IP:
+        IP="<client_unknown>"
+    print(getTime()+"|"+msgType[type]+"|"+str(os.getpid())+"|"+IP+"|"+method+"|"+message) 
 
 # intiate DB connection
 # returns 1 for success and 0 for failure
-def startConnection():
+def startConnection(IP=None):
     global myCursor, myConnection
     isSuccess = 0;
     msg(0,"START_DB","Creating connection to " + dbName + "." + dbTable)
@@ -40,7 +44,7 @@ def startConnection():
 
 # stopping DB connection
 # returns 1 for success and 0 for failure
-def stopConnection():
+def stopConnection(IP=None):
     global myCursor, myConnection
     opType="STOP_DB"
     isClosed = 0;
@@ -62,7 +66,7 @@ def stopConnection():
 # 	0  - if key present
 # 	1  - if key not present
 # 	-1 - failure
-def get(key):
+def get(key,IP=None):
     global myCursor, myConnection
     retFlag = 0
     opType="GET"
@@ -95,7 +99,7 @@ def get(key):
 #       -1 - failure
 # count: number of key-values pairs found
 # allData: 2d array with key-value pairs 
-def getAll():
+def getAll(IP=None):
     global myCursor, myConnection
     opType="GET_ALL"
     allData=[]
@@ -125,7 +129,7 @@ def getAll():
 # 	0  - if key present hence updated
 # 	1  - if key not present hence inserted
 # 	-1 - failure
-def put(key, value):
+def put(key, value, IP=None):
     global myCursor, myConnection
     opType="PUT"
     retFlag = -1
@@ -156,7 +160,7 @@ def put(key, value):
 #       0  - if key present hence deleted
 #       1  - if key not present hence not deleted
 #       -1 - failure
-def delete(key):
+def delete(key, IP=None):
     global myCursor, myConnection
     opType="DELETE"
     retFlag=-1
