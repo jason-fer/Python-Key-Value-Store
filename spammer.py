@@ -113,6 +113,7 @@ def UI(args):
 		value = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(30))
 		value = 'value_inserted_by_SRG_THE_GREAT: >>> ... ' + value + '...' + str(k) + '...PS:Saikat is the best Fantasy Football Player!!!'
 		key = 'SRG_THE_GREAT@' + getTime()
+		key = k
 		ret, o_val = kv739_put(key, value)
 		if ret not in [0, 1]:
 			print "error"
@@ -123,7 +124,7 @@ def UI(args):
 		else:
 			print "Inserted key\Key:", key
 			print "New Value:", value
-		if k % 1000 == 0:
+		if k % 5000 == 0:
 			print "Done Inserting 1000 values"
 			exit(0)
 
