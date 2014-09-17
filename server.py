@@ -1,14 +1,16 @@
 from flask import Flask, request, json
-import dbWorkers
+import dbWorkers, cache
 
 # 500: error
 # 404: key doesn't exist
 # 200: key exists
 # 201: key created 
 
-get_from_db = dbWorkers.get
-put_in_db = dbWorkers.put
-delete_in_db = dbWorkers.delete
+get_from_db = cache.get
+put_in_db = cache.put
+delete_in_db = cache.delete
+
+
 app = Flask(__name__)
 
 client_ip = ''

@@ -109,7 +109,7 @@ def UI(args):
 		elif cmd.upper() == 'P':
 			key = raw_input( "Key: " )
 			print "Values:",
-			value = sys.stdin.readline()
+			value = sys.stdin.readline().strip()
 			ret, o_val = kv739_put(key, value)
 			if ret not in [0,1,-1]:
 				print "Wrong return value:", ret
