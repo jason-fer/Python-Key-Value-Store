@@ -118,7 +118,7 @@ def get(key, IP=None):
         myCursor.execute(sqlSmt)
         d = myCursor.fetchone()
         if d:
-            value = d[0].strip()
+            value = d[0]
             retFlag = 0
             msg(0, opType, "key='" + key + "' found!", IP)
         else:
@@ -126,10 +126,35 @@ def get(key, IP=None):
             msg(0, opType, "key='" + key + "' not found!", IP)
     except:
         retFlag = -1
-        print sys.exec_info()
+        print sys.exc_info()
         msg(1, opType, "operation failed for key='" + key + "'!", IP)
 
     return retFlag, value
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # get all the key-values pairs
 # returns retFlags,count,allData
