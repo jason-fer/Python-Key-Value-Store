@@ -61,3 +61,5 @@ db/allData
 .metadata/.plugins/org.eclipse.ui.workbench/dialog_settings.xml
 .metadata/version.ini
 RemoteSystemsTempFiles/.project
+
+*.log
