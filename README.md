@@ -17,3 +17,21 @@ Partner Group:
 Anusha Dasarakothapalli
 Adalbert Gerald Soosairaj
 Navneet Potti
+
+
+@todo:
+
+Performance Tests:
+
+-Throughput: requests per second in each scenario
+  -get / put (best, worst, expected key value sizes)
+  -Probability based get / put ratios (e.g. read heavy/ write heavy loads)
+
+-Failure tolerance: 
+  -heartbeat cron process sends heartbeat every 10 seconds. if the request
+  times out, the server is restarted
+  -find a way to overload server, confirm it correctly restarts
+
+-Latency:
+  -time for the round trip of a client to server request.
+  -get latency averages for different scenarios
