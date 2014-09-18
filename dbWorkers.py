@@ -61,7 +61,8 @@ def msg(type, method, message, IP=None):
     logMsg = getTime() + "|" + msgType[type] + "|" + str(os.getpid()) + "|" + IP + "|" + method + "|" + message
     if logFileObj:
         logFileObj.write(logMsg + "\n")
-    print(logMsg)
+    if PRINT_TO_SCREEN:
+	print(logMsg)
 
 # intiate DB connection
 # returns 1 for success and 0 for failure
