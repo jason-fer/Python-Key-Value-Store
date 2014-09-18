@@ -1,6 +1,6 @@
 +-------------------------------------------------------------------------------
 | Project 1
-| Authors: Saikat Rafael Gomes, Jason Feriante, Rahul Chatterjee
+| Authors: Saikat Raphael Gomes, Jason Feriante, Rahul Chatterjee
 | Date: 12 Sep 2014
 | Emails: feriante@cs.wisc.edu, saikat@cs.wisc.edu, rchat@cs.wisc.edu
 | Semester: CS739 Spring 2014
@@ -9,7 +9,7 @@
 +-------------------------------------------------------------------------------
 
 Our Group:
-Saikat Rafael Gomes
+Saikat Raphael Gomes
 Jason Feriante
 Rahul Chatterjee
 

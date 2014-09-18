@@ -14,8 +14,12 @@ def get_url(url=None):
 def send(url, data=None ):
 	try:
 		if data:
-			r = requests.put(url, data)
-			j = r.json()
+			opener = urllib2.build_opener(urllib2.HTTPHandler)
+			request = urllib2.Request(url, data=data)
+			request.add_header('Content-Type', 'application/x-www-form-urlencoded ')
+			request.get_method = lambda: 'PUT'
+			d = opener.open(request)
+			j = json.loads(d.read())
 		else:
 			d = urllib2.urlopen(url)
 			j = json.loads(d.read())
@@ -23,9 +27,6 @@ def send(url, data=None ):
 		# print ">>>> Server's response:", j
 		return j
 	except urllib2.HTTPError as e:
-		print e.read()
-		return e.code
-	except requests.RequestException as e:
 		print e.read()
 		return e.code
 
@@ -94,18 +95,15 @@ def test_put(url, tc):
 		key = random_string(20)
 		value = random_string(200)
 		rs = put(key, value, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'key', key))
 		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# print 'Confirm we can get() the value we just put()'
 		rs = get(key, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'key', key))
 		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# print 'Confirm we can update the value we just put()'
 		value = random_string(200)
 		rs = put(key, value, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'key', key))
 		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# second group of tests
@@ -113,18 +111,15 @@ def test_put(url, tc):
 		key = random_string(128)
 		value = random_string(2048)
 		rs = put(key, value, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'key', key))
 		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# print 'Confirm we can get() the value we just put()'
 		rs = get(key, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'key', key))
 		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# print 'Confirm we can update the value we just put()'
 		value = random_string(2048)
 		rs = put(key, value, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'key', key))
 		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		count += 1
@@ -134,25 +129,29 @@ def test_put(url, tc):
 	key = random_string(129)
 	value = random_string(2047)
 	rs = put(key, value, url)
-	tc.assertTrue(test_has_error(rs, tc, True))
+	tc.assertEqual(rs, 500)
+	# tc.assertTrue(test_has_error(rs, tc, True))
 
 	print '\nChecking a val that is too big'
 	key = random_string(127)
 	value = random_string(2049)
 	rs = put(key, value, url)
-	tc.assertTrue(test_has_error(rs, tc, True))
+	tc.assertEqual(rs, 500)
+	# tc.assertTrue(test_has_error(rs, tc, True))
 
 	print '\nChecking an empty key'
 	key = ''
 	value = random_string(2047)
 	rs = put(key, value, url)
-	tc.assertTrue(test_has_error(rs, tc, True))
+	tc.assertEqual(rs, 500)
+	# tc.assertTrue(test_has_error(rs, tc, True))
 
 	print '\nChecking an empty val'
 	key = random_string(127)
 	value = ''
 	rs = put(key, value, url)
-	tc.assertTrue(test_has_error(rs, tc, True))
+	tc.assertEqual(rs, 500)
+	# tc.assertTrue(test_has_error(rs, tc, True))
 	return True
 
 def UI(args):

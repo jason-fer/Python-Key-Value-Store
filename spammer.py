@@ -3,6 +3,17 @@ import json
 import os, sys
 import urllib
 import requests 
+import time
+import datetime
+import string
+import random
+
+# current time for logging
+def getTime():
+	ts = time.time()
+	dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S:%f')
+	return dt
+
 
 url = None
 def get_url(l_url=None):
@@ -96,41 +107,28 @@ def UI(args):
 		exit(0);
 	else:
 		print "Connection successful!"
-
-
-	while(1):
-		cmd = raw_input("cmd: [G]et/[P]ut/[Q]uit/[D]elete: ")
-		if cmd.upper() == 'G':
-			key = raw_input( "Key: " )
-			print "Key:", key 
-			r, val = kv739_get(key)
-			print "Code:", r
-			print "Value:", val
-		elif cmd.upper() == 'P':
-			key = raw_input( "Key: " )
-			print "Values:",
-			value = sys.stdin.readline().strip()
-			ret, o_val = kv739_put(key, value)
-			if ret not in [0,1,-1]:
-				print "Wrong return value:", ret
-			elif ret == 0:
-				print "Updated Key\nKey:", key 
-				print "Old Value:", o_val
-				print "New Value:", value
-			else:
-				print "Inserted Key\nKey:", key 
-				print "New Value:", value
-		elif cmd.upper() == 'D':
-			key = raw_input( "Key: " )
-			print "Key:", key 
-			ret, o_val = kv739_delete(key)
-			# delete the shit
-			print "Code:", ret
-			if ret == 200:
-				print "O_Val:", o_val
-		elif cmd.upper() == 'Q':
-			print 
+	k = 0
+	while (1):
+		k = k + 1
+		value = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(30))
+		value = 'value_inserted_by_SRG_THE_GREAT: >>> ... ' + value + '...' + str(k) + '...PS:Saikat is the best Fantasy Football Player!!!'
+		key = 'SRG_THE_GREAT@' + getTime()
+		key = k
+		ret, o_val = kv739_put(key, value)
+		if ret not in [0, 1]:
+			print "error"
+		elif ret == 0:
+			print "Updated key\nKey:", key
+			print "Old Value:", o_val
+			print "New Value:", value
+		else:
+			print "Inserted key\Key:", key
+			print "New Value:", value
+		if k % 5000 == 0:
+			print "Done Inserting 1000 values"
 			exit(0)
+
+
 
 if __name__ == "__main__":
 	UI(sys.argv)

@@ -5,6 +5,7 @@
 *.gz
 pyvenv/
 db/allData
+log/*
 *\.\#*
 
 /db/allData
