@@ -3,12 +3,11 @@ import time
 import datetime
 import sys
 import os
+from config import *
 
 myConnection = None
 myCursor = None
 logFileObj = None
-dbName = "allData"
-dbTable = "allData"
 msgType = ["INFO", "ERROR"]
 
 # current time for logging
@@ -25,6 +24,7 @@ def getDate():
 
 # print std message to console
 def msg(type, method, message, IP=None):
+    if LOGGING_OFF: return
     global logFileObj
     opType = "LOGGING"
     if not IP:
@@ -68,14 +68,14 @@ def msg(type, method, message, IP=None):
 def startConnection(IP=None):
     global myCursor, myConnection
     isSuccess = 0;
-    msg(0, "START_DB", "Creating connection to " + dbName + "." + dbTable, IP)
+    msg(0, "START_DB", "Creating connection to " + DBNAME + "." + DBTABLE, IP)
     try:
-        myConnection = sqlite3.connect('db/' + dbName)
+        myConnection = sqlite3.connect('db/' + DBNAME)
         myCursor = myConnection.cursor()
         isSuccess = 1
-        msg(0, "START_DB", "Successful connected to " + dbName + "." + dbTable, IP)
+        msg(0, "START_DB", "Successful connected to " + DBNAME + "." + DBTABLE, IP)
     except:
-        msg(1, "START_DB", "Failed to connected to " + dbName + "." + dbTable, IP)
+        msg(1, "START_DB", "Failed to connected to " + DBNAME + "." + DBTABLE, IP)
 
     return isSuccess
 
@@ -85,15 +85,15 @@ def stopConnection(IP=None):
     global myCursor, myConnection, logFileObj
     opType = "STOP_DB"
     isClosed = 0;
-    msg(0, opType, "Closing connection to " + dbName + "." + dbTable, IP)
+    msg(0, opType, "Closing connection to " + DBNAME + "." + DBTABLE, IP)
     try:
         myConnection.close()
         myConnection = None
         myCursor = None
         isClosed = 1
-        msg(0, opType, "Connection closed to " + dbName + "." + dbTable, IP)
+        msg(0, opType, "Connection closed to " + DBNAME + "." + DBTABLE, IP)
     except:
-        msg(1, opType, "Failed to close connection to " + dbName + "." + dbTable, IP)
+        msg(1, opType, "Failed to close connection to " + DBNAME + "." + DBTABLE, IP)
     if logFileObj:
         logFileObj.close()
         logFileObj = None
@@ -113,7 +113,7 @@ def get(key, IP=None):
         startConnection(IP)
     value = ''
     try:
-        sqlSmt = "SELECT value from " + dbTable + " where key = '" + key + "'"
+        sqlSmt = "SELECT value from " + DBTABLE + " where key = '" + key + "'"
         msg(0, opType, "SQL: " + sqlSmt, IP)
         myCursor.execute(sqlSmt)
         d = myCursor.fetchone()
@@ -174,8 +174,8 @@ def getAll(IP=None):
         startConnection()
     value = ''
     try:
-        sqlSmt = "SELECT * FROM " + dbTable
-        msg(0, opType, "SQL: " + sqlSmt, IP)
+        sqlSmt = "SELECT * FROM " + DBTABLE
+        #msg(0, opType, "SQL: " + sqlSmt, IP)
         for row in myCursor.execute(sqlSmt):
             allData.append((row[0], row[1]))
             count = count + 1
@@ -203,20 +203,20 @@ def put(key, value, IP=None):
     if not myCursor:
         startConnection()
     try:
-        msg(0, opType, "adding key='" + key + "' & value='" + value + "'", IP)
+        #msg(0, opType, "adding key='" + key + "' & value='" + value[:20] + "'", IP)
         retFlag, oldValue = get(key, IP)
         if retFlag == -1:
             raise
         elif retFlag == 1:
-            sqlSmt = "INSERT INTO " + dbTable + " VALUES ('" + key + "','" + value + "')"
-            msg(0, opType, "SQL: " + sqlSmt, IP)
+            sqlSmt = "INSERT INTO " + DBTABLE + " VALUES ('" + key + "','" + value + "')"
+            #msg(0, opType, "SQL: " + sqlSmt, IP)
             myCursor.execute(sqlSmt)
-            msg(0, opType, "value='" + value + "' insert!", IP)
+            #msg(0, opType, "value='" + value[:20] + "' insert!", IP)
         else:
-            sqlSmt = "UPDATE " + dbTable + " SET value='" + value + "' where key='" + key + "'"
-            msg(0, opType, "SQL: " + sqlSmt, IP)
+            sqlSmt = "UPDATE " + DBTABLE + " SET value='" + value + "' where key='" + key + "'"
+            #msg(0, opType, "SQL: " + sqlSmt, IP)
             myCursor.execute(sqlSmt)
-            msg(0, opType, "value updated from '" + oldValue + "' to '" + value + "'", IP)
+            #msg(0, opType, "value updated from '" + oldValue + "' to '" + value + "'", IP)
         myConnection.commit()
         msg(0, opType, "successful", IP)
     except:
@@ -242,7 +242,7 @@ def delete(key, IP=None):
         if retFlag == -1:
             raise
         elif retFlag == 0:
-            sqlSmt = "DELETE FROM " + dbTable + " WHERE key='" + key + "'"
+            sqlSmt = "DELETE FROM " + DBTABLE + " WHERE key='" + key + "'"
             msg(0, opType, "SQL: " + sqlSmt, IP)
             myCursor.execute(sqlSmt)
             msg(0, opType, "value='" + oldValue + "' deleted!", IP)

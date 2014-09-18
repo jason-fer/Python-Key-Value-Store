@@ -1,5 +1,6 @@
 import sys, os
-import dbWorkers
+import dbWorkers 
+from config import *
 import random, json
 
 get_from_db = dbWorkers.get
@@ -7,7 +8,6 @@ put_in_db = dbWorkers.put
 delete_in_db = dbWorkers.delete
 
 _cache_ = {}
-MAX_SIZE = 2 #1024
 
 
 def insert(key, val):
@@ -19,9 +19,9 @@ def insert(key, val):
     _cache_[key] = [val, l+1]
     print json.dumps(_cache_)
     print "Inserting into the cache: key='%s' & value='%s'" % ( key, val)
-    if len(_cache_)>MAX_SIZE:
+    if len(_cache_)>MAX_CACHE_SIZE:
         k = min(_cache_, key=lambda k: _cache_[k][1]+\
-                random.randint(0,MAX_SIZE)) 
+                random.randint(0,MAX_CACHE_SIZE)) 
         print "Deleting from the cache: key='%s'" % k
         del _cache_[k]
 
@@ -43,10 +43,11 @@ def put(key, val, c_ip):
 
 def delete(key, c_ip):
     try:
+        print "Deleting from cache"
         del _cache_[key]
-    except:
+    except KeyError:
         pass
-    dbWorkers.delete(key, c_ip)
+    return dbWorkers.delete(key, c_ip)
 
 
 

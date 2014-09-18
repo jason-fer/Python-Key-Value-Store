@@ -3,6 +3,7 @@ import json
 import os, sys
 import urllib
 import requests 
+from config import *
 
 url = None
 def get_url(l_url=None):
@@ -13,10 +14,10 @@ def get_url(l_url=None):
 	# check ip_port format
 	if not l_url.startswith('http'):
 		l_url = "http://%s" % ( l_url )
-	url = l_url
+        url = l_url
 
-
-def kv739_init(url):
+def kv739_init(_url):
+        get_url(_url)
 	try:
 		urllib2.urlopen(url)
 		return 0 # success
@@ -51,7 +52,7 @@ def kv739_put(key, value):
 	ret = requests.put(url, data);
 	old_value = ''			
 	if ret.status_code == 500:
-		return -1
+		return -1, ''
 	elif ret.status_code == 200:
 		r = json.loads(ret.content)
 		try:
@@ -76,63 +77,11 @@ def kv739_delete(key):
 			return 1, None # the key does not exist
 		elif d.status_code == 200:
 			r = json.loads(d.content)
-			value = r.get('value', '')
+			value = r.get('old_value', '')
 			return 0, value
 		elif d.status_code == 500:
 			return -1, "ERROR!"
 	except requests.ConnectionError, e:
 		return -1, "ERROR: %s" % e.error
-	
-def UI(args):
-	global url
-	if len(args)>1:
-		get_url(args[1])
-	else:
-		get_url()
-	print url
-	con = kv739_init(url)
-	if con==-1:
-		print "Connection refused!"
-		exit(0);
-	else:
-		print "Connection successful!"
 
 
-	while(1):
-		cmd = raw_input("cmd: [G]et/[P]ut/[Q]uit/[D]elete: ")
-		if cmd.upper() == 'G':
-			key = raw_input( "Key: " )
-			print "Key:", key 
-			r, val = kv739_get(key)
-			print "Code:", r
-			print "Value:", val
-		elif cmd.upper() == 'P':
-			key = raw_input( "Key: " )
-			print "Values:",
-			value = sys.stdin.readline().strip()
-			ret, o_val = kv739_put(key, value)
-			if ret not in [0,1,-1]:
-				print "Wrong return value:", ret
-			elif ret == 0:
-				print "Updated Key\nKey:", key 
-				print "Old Value:", o_val
-				print "New Value:", value
-			else:
-				print "Inserted Key\nKey:", key 
-				print "New Value:", value
-		elif cmd.upper() == 'D':
-			key = raw_input( "Key: " )
-			print "Key:", key 
-			ret, o_val = kv739_delete(key)
-			# delete the shit
-			print "Code:", ret
-			if ret == 200:
-				print "O_Val:", o_val
-		elif cmd.upper() == 'Q':
-			print 
-			exit(0)
-
-if __name__ == "__main__":
-	UI(sys.argv)
-		
-	
