@@ -1,5 +1,6 @@
-import client
 import os,sys, timeit
+sys.path.insert(0,'../')
+import client
 import random
 import time
 from config import *
