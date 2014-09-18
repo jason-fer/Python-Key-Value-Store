@@ -131,31 +131,6 @@ def get(key, IP=None):
 
     return retFlag, value
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # get all the key-values pairs
 # returns retFlags,count,allData
 # retFlags

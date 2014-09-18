@@ -10,7 +10,6 @@ get_from_db = cache.get
 put_in_db = cache.put
 delete_in_db = cache.delete
 
-
 app = Flask(__name__)
 
 client_ip = ''
@@ -113,7 +112,6 @@ def delete_key():
 	key = request.args.get('key', '')
         if not key:
                 key = request.form.get('key', '')
-
 	#check the key
 	ok, error_message = check_key('delete()', key)
 	key = request.form.get('key', '')
@@ -125,14 +123,11 @@ def delete_key():
 	status, value = delete_in_db(key, client_ip);
 
 	# key wasn't present = 404 not found
-	if status == 1:
-		return  {'old_value': '', 'errors': [ 'key not found'] }, 404
-	# system error = 500 server error
-	elif status == -1:
-		return  {'old_value': value, 'errors': [ 'unknown database error'] }, 500
-	# key was present = 200 ok
-	else:
+	if status == 1 or status == 0:
 		return  {'old_value': value }, 200
+	# system error = 500 server error
+	else:
+		return  {'old_value': value, 'errors': [ 'unknown database error'] }, 500
 	
 @app.route('/', methods=['GET', 'PUT', 'DELETE'])
 def main():
