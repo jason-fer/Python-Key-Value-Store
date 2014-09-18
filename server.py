@@ -1,6 +1,6 @@
 from flask import Flask, request, json
 import dbWorkers, cache
-
+from config import *
 # 500: error
 # 404: key doesn't exist
 # 200: key exists

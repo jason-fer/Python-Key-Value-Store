@@ -3,43 +3,54 @@ import os,sys, timeit
 import random
 import time
 from config import *
-
+import string
 
 
 inp_file_name = 'thesis.txt'
-def put_test(n=10000):
+
+def get_rand_string(n=128):
+    return ''.join(random.choice(string.ascii_uppercase + \
+                                 string.ascii_lowercase + \
+                                 string.digits + ' ') for _ in range(n))
+    
+
+
+def put_test(n=10000, n_key=128, n_val=128):
     f = open(inp_file_name)
     for i in xrange(n):
-        s = f.read(1000);
-        s.replace('\r', '')
-        s.replace('\n', '')
-        key = s[:128]
-        value = s[128:]
+        # s = f.read(1000);
+        # s.replace('\r', '')
+        # s.replace('\n', '')
+        # key = s[:128]
+        # value = s[128:]
+        key, value = get_rand_string(n_key), get_rand_string(n_val)
         r, o_val = client.kv739_put(key, value)
         if r==-1:
             print "SERVER CRASHED CRASHED!!!!!"
             time.sleep(1)
-        print r, o_val
+        print i, r, o_val
 
 def get_test(n=10000):
     f = open(inp_file_name)
     for i in xrange(n):
-        s = f.read(1000);
-        s.replace('\r', '')
-        s.replace('\n', '')
-        key = s[:128]
-        value = s[128:]
+        # S = f.read(1000);
+        # s.replace('\r', '')
+        # s.replace('\n', '')
+        # key = s[:128]
+        # value = s[128:]
+        key, value = get_rand_string(n_key), get_rand_string(n_val)
         r, val = client.kv739_get(key, value)
         print r, val
 
 def del_test(n=10000):
     f = open(inp_file_name)
     for i in xrange(n):
-        s = f.read(1000);
-        s.replace('\r', '')
-        s.replace('\n', '')
-        key = s[:128]
-        value = s[128:]
+        # s = f.read(1000);
+        # s.replace('\r', '')
+        # s.replace('\n', '')
+        # key = s[:128]
+        # value = s[128:]
+        key, value = get_rand_string(n_key), get_rand_string(n_val)
         r, val = client.kv739_delete(key, value)
         print r, val
 
@@ -100,7 +111,7 @@ def UI(args):
 
 if __name__ == "__main__":
     client.kv739_init(sys.argv[1])
-    put_test()
+    put_test(100)
     #UI(sys.argv)
 		
 	
