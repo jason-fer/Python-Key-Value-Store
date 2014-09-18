@@ -107,7 +107,7 @@ def UI(args):
 		exit(0);
 	else:
 		print "Connection successful!"
-	k = 0
+	k = 5000
 	while (1):
 		k = k + 1
 		value = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(30))
@@ -124,7 +124,7 @@ def UI(args):
 		else:
 			print "Inserted key\Key:", key
 			print "New Value:", value
-		if k % 5000 == 0:
+		if k % 1000 == 0:
 			print "Done Inserting 1000 values"
 			exit(0)
 

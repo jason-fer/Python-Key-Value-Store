@@ -110,10 +110,13 @@ def put_value():
 
 def delete_key():
 	client_ip = request.remote_addr
-	key = request.args.get('key', '');
+	key = request.args.get('key', '')
+        if not key:
+                key = request.form.get('key', '')
 
 	#check the key
-	ok, error_message = check_key('get()', key);
+	ok, error_message = check_key('delete()', key)
+	key = request.form.get('key', '')
 	if not ok:
 		# 500 = error
 		return error_message, 500
@@ -123,15 +126,14 @@ def delete_key():
 
 	# key wasn't present = 404 not found
 	if status == 1:
-		return  {'value': '', 'errors': [ 'key not found'] }, 404
+		return  {'old_value': '', 'errors': [ 'key not found'] }, 404
 	# system error = 500 server error
 	elif status == -1:
-		return  {'value': value, 'errors': [ 'unknown database error'] }, 500
+		return  {'old_value': value, 'errors': [ 'unknown database error'] }, 500
 	# key was present = 200 ok
 	else:
-		return  {'value': value }, 200
+		return  {'old_value': value }, 200
 	
-
 @app.route('/', methods=['GET', 'PUT', 'DELETE'])
 def main():
 	if request.method == 'GET':
