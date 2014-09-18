@@ -6,7 +6,15 @@ import time
 from config import *
 import string
 import cProfile
+import logger
 
+msg=logger.msg
+getTime=logger.getTime
+getDate=logger.getDate
+logFileObj=logger.logFileObj
+
+myIP = "localhost:perf_test"
+opType = "PERF"
 
 def get_rand_string(n=128):
     return ''.join(random.choice(string.ascii_uppercase + \
@@ -42,6 +50,15 @@ def load_test(args):
 
 if __name__ == "__main__":
     client.kv739_init(sys.argv[1])
+    logParentDir = 'log'
+    if not os.path.isdir(logParentDir):
+        print(getTime() + "|INFO|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|creating log dir")
+        try:
+            os.makedirs(logParentDir)
+            print(getTime() + "|INFO|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|log folder created: " + logParentDir)
+        except:
+            print(getTime() + "|ERROR|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|log  folder could not be created at " + logParentDir)
+
     call = ['put']
     num = [10]
     k_size = [100]
@@ -50,6 +67,11 @@ if __name__ == "__main__":
         for k in k_size:
              for v in v_size:
                  for t in call:
-                     testName=t+"_test("+str(n)+","+str(k)+","+str(v)+")"
-                     testFileName=t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf"
-                     cProfile.run(testName,testFileName)
+                     try:
+                         testName=t+"_test("+str(n)+","+str(k)+","+str(v)+")"
+                         testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf"
+                         msg(0, opType, "Starting test: "+testName, myIP, "test")
+                         cProfile.run(testName,testFileName)
+                         msg(0, opType, "Test completed: "+testName, myIP, "test")
+                     except:
+                         msg(1, opType, "Unexcepted failure with test: "+testName, myIP, "test")
