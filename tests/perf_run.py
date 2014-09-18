@@ -10,7 +10,7 @@ import cProfile
 import logger
 import timeit
 
-PERF_TEST_SERVER=True
+PERF_TEST_SERVER=False
 
 if PERF_TEST_SERVER:
     get=dbWorkers.get
