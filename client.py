@@ -59,12 +59,12 @@ def kv739_put(key, value):
 			old_value = r['old_value']
 			return 0, old_value
 		except KeyError:
-			print "What the fuck server. Bitch/Son of a bitch!! "
+			print "Failure!!!"
 			return -1, ''
 	elif ret.status_code == 201:
 		return 1, old_value
 	else:
-		print "WTF!!!"
+		print "Failure!!!"
 		return -1, old_value
 
 def kv739_delete(key):
