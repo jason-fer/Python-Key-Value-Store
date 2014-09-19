@@ -92,7 +92,7 @@ if __name__ == "__main__":
          print(getTime() + "|ERROR|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|daily log file " + perfResFile + " cannot be accessed")
 
     call = ['get','put','delete']
-    num = [1,2,4,8,16,32,64]
+    num = [1,2,4,8,16,32,64,128,256,516,1024]
     k_size = [10]
     v_size = [10]
     msgAppend="["+serverUrl+"] "
@@ -102,7 +102,6 @@ if __name__ == "__main__":
                  for t in call:
                      try:
                          testName=t+"_test("+str(n)+","+str(k)+","+str(v)+")"
-                         testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+"__"+getTime()+".perf"
                          testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf" 
                          msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
                          #cProfile.run(testName) #,testFileName)
