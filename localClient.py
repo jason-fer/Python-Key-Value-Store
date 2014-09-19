@@ -6,13 +6,23 @@ import requests
 from config import *
 import client
 
+def get_url(l_url=None):
+	global url
+	if url: return
+	if not l_url:
+		l_url = raw_input("\nServer:  <IP>:<port>\n")
+	# check ip_port format
+	if l_url.startswith('http'):
+		l_url = "http://%s" % ( l_url )
+        url = l_url
+
 url = None
 def UI(args):
 	global url
 	if len(args)>1:
-		client.get_url(args[1])
+		get_url(args[1])
 	else:
-		client.get_url()
+		get_url()
 	print url
 	con = client.kv739_init(url)
 	if con==-1:

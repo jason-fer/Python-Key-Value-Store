@@ -6,18 +6,13 @@ import requests
 from config import *
 
 url = None
-def get_url(l_url=None):
-	global url
-	if url: return
-	if not l_url:
-		l_url = raw_input("\nServer:  <IP>:<port>\n")
-	# check ip_port format
-	if not l_url.startswith('http'):
-		l_url = "http://%s" % ( l_url )
-        url = l_url
 
 def kv739_init(_url):
-        get_url(_url)
+	if not _url or len(_url.split(':')) != 2:
+		print "ERROR:",_url
+		return -1
+	global url
+	url = "http://%s" %_url
 	try:
 		urllib2.urlopen(url)
 		return 0 # success
