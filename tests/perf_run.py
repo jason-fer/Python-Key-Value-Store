@@ -65,6 +65,7 @@ def load_test(args):
     pass
 
 if __name__ == "__main__":
+    NUM_OF_TRIALS=5
     serverUrl=sys.argv[1]
     if PERF_TEST_SERVER:
         serverUrl="localhost"
@@ -96,18 +97,19 @@ if __name__ == "__main__":
     k_size = [1,64,128]
     v_size = [1,1024,2048]
     msgAppend="["+serverUrl+"] "
-    for n in num:
-        for k in k_size:
-             for v in v_size:
-                 for t in call:
-                     try:
-                         testName=t+"_test("+str(n)+","+str(k)+","+str(v)+")"
-                         testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf" 
-                         msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
-                         #cProfile.run(testName) #,testFileName)
-                         tm = timeit.timeit(stmt=testName, number=1, setup='from __main__ import get_test, put_test, delete_test')
-                         perfResultObj.write(getTime()+","+t+","+myIP+","+serverUrl+","+str(n)+","+str(k)+","+str(v)+","+str(tm)+","+str(tm/n)+"\n")
-			 msg(0, opType, msgAppend+"Test completed: "+testName, myIP, "test")
-                         msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(tm), myIP, "test")
-                     except:
-                         msg(1, opType, msgAppend+"Unexcepted failure with test: "+testName, myIP, "test")
+    for x in range(0,NUM_OF_TRIALS):
+        for n in num:
+             for k in k_size:
+                 for v in v_size:
+                     for t in call:
+                         try:
+                             testName=t+"_test("+str(n)+","+str(k)+","+str(v)+")"
+                             testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf" 
+                             msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
+                             #cProfile.run(testName) #,testFileName)
+                             tm = timeit.timeit(stmt=testName, number=1, setup='from __main__ import get_test, put_test, delete_test')
+                             perfResultObj.write(getTime()+","+t+","+myIP+","+serverUrl+","+str(n)+","+str(k)+","+str(v)+","+str(tm)+","+str(tm/n)+"\n")
+			     msg(0, opType, msgAppend+"Test completed: "+testName, myIP, "test")
+                             msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(tm), myIP, "test")
+                         except:
+                             msg(1, opType, msgAppend+"Unexcepted failure with test: "+testName, myIP, "test")
