@@ -93,8 +93,8 @@ if __name__ == "__main__":
 
     call = ['get','put','delete']
     num = [1,2,4,8,16,32,64,128,256,516,1024]
-    k_size = [10]
-    v_size = [10]
+    k_size = [1,64,128]
+    v_size = [1,1024,2048]
     msgAppend="["+serverUrl+"] "
     for n in num:
         for k in k_size:

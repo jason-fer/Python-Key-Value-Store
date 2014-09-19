@@ -21,6 +21,10 @@ def getDate():
 
 # print std message to console
 def msg(type, method, message, IP=None, caller='server'):
+    logMsg = getTime() + "|" + msgType[type] + "|" + str(os.getpid()) + "|" + IP + "|" \
+    + caller + "|" + method + "|" + message
+    if PRINT_TO_SCREEN:
+        print(logMsg)
     if LOGGING_OFF: return
     global logFileObj
     opType = "LOGGING"
@@ -55,10 +59,6 @@ def msg(type, method, message, IP=None, caller='server'):
     except:
         print(getTime() + "|" + msgType[1] + "|" + str(os.getpid()) + "|" + IP + "|" \
               + opType + "|daily log file " + logFile + " cannot be accessed")
-    logMsg = getTime() + "|" + msgType[type] + "|" + str(os.getpid()) + "|" + IP + "|" \
-    + caller + "|" + method + "|" + message
     if logFileObj:
         logFileObj.write(logMsg + "\n")
-    if PRINT_TO_SCREEN:
-        print(logMsg)
 
