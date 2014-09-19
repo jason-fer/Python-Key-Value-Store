@@ -26,10 +26,11 @@ else:
 msg=logger.msg
 getTime=logger.getTime
 getDate=logger.getDate
-logFileObj=logger.logFileObj
+perfResultObj=None
 
-myIP = "localhost:perf_test"
+myIP = "localhost"
 opType = "PERF"
+msgAppend=""
 
 def get_rand_string(n=128):
     return ''.join(random.choice(string.ascii_uppercase + \
@@ -37,26 +38,26 @@ def get_rand_string(n=128):
                                  string.digits + ' ') for _ in range(n))
 
 
-def put_test(n=10000, n_key=128, n_val=128):
-    for i in xrange(n):
+def put_test(n=10000, n_key=128, n_val=128, IP=None):
+   global msgAppend
+   for i in xrange(n):
         key, value = get_rand_string(n_key), get_rand_string(n_val)
         r, o_val = put(key, value)
         if r==-1:
+            testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)+".perf" 
+            msg(0, opType, msgAppend+"Starting test: "+testName, "localhost", "test")
             print "SERVER CRASHED CRASHED!!!!!"
             time.sleep(1)
-        #print i, r, o_val
 
-def get_test(n=10000, n_key=128, n_val=128):
+def get_test(n=10000, n_key=128, n_val=128, IP=None):
     for i in xrange(n):
         key, value = get_rand_string(n_key), get_rand_string(n_val)
         r, val = get(key)
-        #print r, val
 
-def delete_test(n=10000, n_key=128, n_val=128):
+def delete_test(n=10000, n_key=128, n_val=128, IP=None):
     for i in xrange(n):
         key, value = get_rand_string(n_key), get_rand_string(n_val)
         r, val = delete(key)
-        #print r, val
 
 
 def load_test(args):
@@ -65,9 +66,11 @@ def load_test(args):
 
 if __name__ == "__main__":
     serverUrl=sys.argv[1]
-    #client.kv739_init(serverUrl)
+    if PERF_TEST_SERVER:
+        serverUrl="localhost"
     init(serverUrl)
     logParentDir = 'log'
+    perfResFile=logParentDir+"/perf_result.csv"
     if not os.path.isdir(logParentDir):
         print(getTime() + "|INFO|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|creating log dir")
         try:
@@ -75,9 +78,21 @@ if __name__ == "__main__":
             print(getTime() + "|INFO|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|log folder created: " + logParentDir)
         except:
             print(getTime() + "|ERROR|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|log  folder could not be created at " + logParentDir)
+    if not perfResultObj:
+        if not os.path.exists(perfResFile):
+            print(getTime() + "|INFO|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|creating daily log file: " + perfResFile)
+            try:    
+                perfResultObj = open(perfResFile, "a")
+                print(getTime() + "|INFO|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|daily log file created: " + perfResFile)
+            except: 
+                print(getTime() + "|ERROR|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|daily log file " + perfResFile + " cannot be created!!!")
+    try:
+         perfResultObj = open(perfResFile, "a")
+    except:
+         print(getTime() + "|ERROR|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|daily log file " + perfResFile + " cannot be accessed")
 
     call = ['get','put','delete']
-    num = [1]
+    num = [1,2,4,8,16,32,64]
     k_size = [10]
     v_size = [10]
     msgAppend="["+serverUrl+"] "
@@ -91,8 +106,9 @@ if __name__ == "__main__":
                          testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf" 
                          msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
                          #cProfile.run(testName) #,testFileName)
-                         t = timeit.timeit(stmt=testName, number=1, setup='from __main__ import get_test, put_test, delete_test')
+                         tm = timeit.timeit(stmt=testName, number=1, setup='from __main__ import get_test, put_test, delete_test')
+                         perfResultObj.write(getTime()+","+t+","+myIP+","+serverUrl+","+str(n)+","+str(k)+","+str(v)+","+str(tm)+","+str(tm/n)+"\n")
 			 msg(0, opType, msgAppend+"Test completed: "+testName, myIP, "test")
-                         msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(t), myIP, "test")
+                         msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(tm), myIP, "test")
                      except:
                          msg(1, opType, msgAppend+"Unexcepted failure with test: "+testName, myIP, "test")
