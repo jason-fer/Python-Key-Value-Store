@@ -13,3 +13,6 @@ log/*
 /.~lock.p1-writeup.doc\#
 .idea/
 .metadata/
+/db/allData_bak
+
+/tests/log/
