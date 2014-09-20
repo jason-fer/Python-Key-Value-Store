@@ -129,7 +129,7 @@ def delete_key():
 	else:
 		return  {'old_value': value, 'errors': [ 'unknown database error'] }, 500
 	
-@app.route('/', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/', methods=['GET', 'PUT', 'DELETE', 'OPTIONS'])
 def main():
 	if request.method == 'GET':
 		data, http_status = get_value() 
@@ -142,6 +142,9 @@ def main():
 	if request.method == 'DELETE':
 		data, http_status = delete_key() 
 		return json.dumps(data), http_status
+
+	if request.method == 'OPTIONS':
+		return json.dumps({'heartbeat':'I am alive!!!'}), 200
 	else:
 		return json.dumps({'errors':['Not implemented']}), 405
 
