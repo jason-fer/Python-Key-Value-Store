@@ -20,10 +20,10 @@ Navneet Potti
 
 
 Our Server:
-http://seclab8.cs.wisc.edu:5000
+python test_client.py http://seclab8.cs.wisc.edu:5000
 
 Brandon's server:
-http://adg-desktop-07.cs.wisc.edu:8080
+python test_client.py http://adg-desktop-07.cs.wisc.edu:8080
 
 
 @todo:

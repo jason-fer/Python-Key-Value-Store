@@ -89,7 +89,7 @@ def test_get(url, tc):
 def test_put(url, tc):
 
 	count = 0
-	maxCount = 50
+	maxCount = 3
 	print '\nRunning '+ str(maxCount * 6) +' random key and value updates'
 	while count < maxCount:
 		# first group of tests
