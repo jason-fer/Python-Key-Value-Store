@@ -15,7 +15,7 @@ myCursor = None
 
 # intiate DB connection
 # returns 1 for success and 0 for failure
-def startConnection(IP=None):
+def startConnection(IP=''):
     global myCursor, myConnection
     isSuccess = 0;
     msg(0, "START_DB", "Creating connection to " + DBNAME + "." + DBTABLE, IP)
@@ -23,15 +23,15 @@ def startConnection(IP=None):
         myConnection = sqlite3.connect('db/' + DBNAME)
         myCursor = myConnection.cursor()
         isSuccess = 1
-        msg(0, "START_DB", "Successful connected to " + DBNAME + "." + DBTABLE, IP)
+        msg(0, "START_DB", "Success. Connected to: " + DBNAME + "." + DBTABLE, IP)
     except:
-        msg(1, "START_DB", "Failed to connected to " + DBNAME + "." + DBTABLE, IP)
+        msg(1, "START_DB", "Fail. Couldn't connect to: " + DBNAME + "." + DBTABLE, IP)
 
     return isSuccess
 
 # stopping DB connection
 # returns 1 for success and 0 for failure
-def stopConnection(IP=None):
+def stopConnection(IP=''):
     global myCursor, myConnection, logFileObj
     opType = "STOP_DB"
     isClosed = 0;
@@ -55,7 +55,7 @@ def stopConnection(IP=None):
 # 	0  - if key present
 # 	1  - if key not present
 # 	-1 - failure
-def get(key, IP=None):
+def get(key, IP=''):
     global myCursor, myConnection
     retFlag = 0
     opType = "GET"
@@ -89,7 +89,7 @@ def get(key, IP=None):
 #       -1 - failure
 # count: number of key-values pairs found
 # allData: 2d array with key-value pairs 
-def getAll(IP=None):
+def getAll(IP=''):
     global myCursor, myConnection
     opType = "GET_ALL"
     allData = []
@@ -121,7 +121,7 @@ def getAll(IP=None):
 # 	0  - if key present hence updated
 # 	1  - if key not present hence inserted
 # 	-1 - failure
-def put(key, value, IP=None):
+def put(key, value, IP=''):
     global myCursor, myConnection
     opType = "PUT"
     retFlag = -1
@@ -155,7 +155,7 @@ def put(key, value, IP=None):
 #       0  - if key present hence deleted
 #       1  - if key not present hence not deleted
 #       -1 - failure
-def delete(key, IP=None):
+def delete(key, IP=''):
     global myCursor, myConnection
     opType = "DELETE"
     retFlag = -1
