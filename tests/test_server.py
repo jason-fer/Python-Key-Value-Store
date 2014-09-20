@@ -1,5 +1,6 @@
 #only for testing our own server 
 #more robust tests that check more data than the client is able to return
+#these tests wont work right vs someone else's server.
 import urllib2, json, os, sys, urllib, unittest, string, random, requests
 
 def random_string(size=8, chars=string.ascii_uppercase + string.digits):
