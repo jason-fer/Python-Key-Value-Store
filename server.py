@@ -145,7 +145,7 @@ def main():
 
 	if request.method == 'OPTIONS':
 		key = request.args.get('heartbeat', '');
-		if key == 'true':
+		if key:
 			return json.dumps({'heartbeat':'I am alive!!!'}), 200
 		else:
 			allowed_methods = {
