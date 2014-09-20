@@ -15,7 +15,7 @@ def kv739_init(_url):
 		url = "http://%s" %_url
 	else:
 		url = _url
-
+        return 0
 	try:
 		urllib2.urlopen(url)
 		return 0 # success
@@ -40,6 +40,8 @@ def kv739_get(key):
 			return 0, value
 		elif d.status_code == 500:
 			return -1, "ERROR!" 
+                else:
+                        return -1, "WTF!!!!"
 	except requests.ConnectionError, e:
 		return -1, "ERROR: %s" % e.error
 
@@ -67,10 +69,9 @@ def kv739_put(key, value):
 
 def kv739_delete(key):
 	data = {'key' : key}
-	url_values = urllib.urlencode(data)
-	full_url = '%s?%s' % (url, url_values)
+	enc_data = urllib.urlencode(data)
 	try:
-		d = requests.delete(full_url)
+		d = requests.delete(url, data={'key' : key})
 		if d.status_code == 404:
 			return 1, None # the key does not exist
 		elif d.status_code == 200:
