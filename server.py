@@ -144,7 +144,43 @@ def main():
 		return json.dumps(data), http_status
 
 	if request.method == 'OPTIONS':
-		return json.dumps({'heartbeat':'I am alive!!!'}), 200
+		key = request.args.get('heartbeat', '');
+		if key == 'true':
+			return json.dumps({'heartbeat':'I am alive!!!'}), 200
+		else:
+			allowed_methods = {
+				'HTTP GET': [
+					{'arguments':'(string) key'},
+					{'description':'retrieve the value of a key'},
+					{'HTTP Status':'404 (key not found), 200 (key found), 500 (server error)'},
+					{'returns':'(string) value'},
+				],
+				'HTTP PUT': [
+					{'arguments':'(string) key, (string) value'},
+					{'description':'set the value of a key'},
+					{'HTTP Status':'201 (created), 200 (updated), 500 (server error)'},
+					{'returns':'(string) old_value, only on HTTP Status 200'},
+				],
+				'HTTP DELETE': [
+					{'arguments':'(string) key'},
+					{'description':'invalidate a key / value'},
+					{'HTTP Status':'200 (deleted), 500 (server error)'},
+					{'returns':'(string) value'},
+				],
+				'HTTP OPTIONS (heartbeat)': [
+					{'arguments':'(string) key'},
+					{'description':'pass the query string <url>?heartbeat=true'},
+					{'HTTP Status':'200 (server is alive), 500 (server error)'},
+					{'returns':'(JSON) {\'heartbeat\':\'I am alive!!!\'}'},
+				],
+				'HTTP OPTIONS': [
+					{'arguments':'None'},
+					{'description':'View arguments for all possible HTTP REQUEST methods'},
+					{'HTTP Status':'200 (server is alive), 500 (server error)'},
+					{'returns':'descriptions for all methods.'},
+				],
+			}
+			return json.dumps(allowed_methods), 200
 	else:
 		return json.dumps({'errors':['Not implemented']}), 405
 
