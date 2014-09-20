@@ -8,17 +8,20 @@ from config import *
 url = None
 
 def kv739_init(_url):
-	if not _url or len(_url.split(':')) != 2:
-		print "ERROR:",_url
-		return -1
 	global url
-	url = "http://%s" %_url
+
+	pos = _url.find('http')
+	if pos == -1:
+		url = "http://%s" %_url
+	else:
+		url = _url
+
 	try:
 		urllib2.urlopen(url)
 		return 0 # success
 	except urllib2.HTTPError, e:
 		if e.code==500:
-			return 0
+			return 0 # ignore this issue?
 	except urllib2.URLError, e:
 		print('URLError', e.args)
 	return -1 # failure

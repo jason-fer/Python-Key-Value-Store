@@ -17,12 +17,12 @@ def insert(key, val):
     except KeyError:
         l = 0
     _cache_[key] = [val, l+1]
-    print json.dumps(_cache_)
-    print "Inserting into the cache: key='%s' & value='%s'" % ( key, val)
+    # print json.dumps(_cache_)
+    # print "Inserting into the cache: key='%s' & value='%s'" % ( key, val)
     if len(_cache_)>MAX_CACHE_SIZE:
         k = min(_cache_, key=lambda k: _cache_[k][1]+\
                 random.randint(0,MAX_CACHE_SIZE)) 
-        print "Deleting from the cache: key='%s'" % k
+        # print "Deleting from the cache: key='%s'" % k
         del _cache_[k]
 
 def get(key, c_ip=None):
@@ -43,7 +43,7 @@ def put(key, val, c_ip):
 
 def delete(key, c_ip):
     try:
-        print "Deleting from cache"
+        # print "Deleting from cache"
         del _cache_[key]
     except KeyError:
         pass

@@ -1,3 +1,5 @@
+#only for testing our own server 
+#more robust tests that check more data than the client is able to return
 import urllib2, json, os, sys, urllib, unittest, string, random, requests
 
 def random_string(size=8, chars=string.ascii_uppercase + string.digits):
@@ -27,7 +29,7 @@ def send(url, data=None ):
 		# print ">>>> Server's response:", j
 		return j
 	except urllib2.HTTPError as e:
-		print e.read()
+		# print e.read()
 		return e.code
 
 def get(key, url=None):
@@ -88,7 +90,7 @@ def test_put(url, tc):
 
 	count = 0
 	maxCount = 50
-	print '\nRunning '+ str(maxCount) +' random key and value updates'
+	print '\nRunning '+ str(maxCount * 6) +' random key and value updates'
 	while count < maxCount:
 		# first group of tests
 		# print '\nChecking a random key and value'
@@ -155,7 +157,6 @@ def test_put(url, tc):
 	return True
 
 def UI(args):
-
 	if len(args)>1:
 		url = get_url(args[1])
 	else:
@@ -178,7 +179,7 @@ def UI(args):
 
 	print '\n>>>> All tests pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <<<<\n'
 	## try HTTP delete / put (both should throw errors)
-
+	
 	exit(0)
 
 if __name__ == "__main__":
