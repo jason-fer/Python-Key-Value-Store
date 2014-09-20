@@ -38,7 +38,8 @@ def test_put(url, tc):
 
   count = 0
   maxCount = 50
-  print '\nRunning '+ str(maxCount * 6) +' random key and value updates'
+  # 9x operations per loop
+  print '\nRunning '+ str(maxCount * 9) +' random key and value updates'
   while count < maxCount:
     # first group of tests
     
@@ -55,6 +56,10 @@ def test_put(url, tc):
     tc.assertEqual(rs, 0) # the key should exist
     check_last_put(tc, key, value)
 
+    # delete the value we just put(), then updated
+    rs, ret_val = kv739_delete(key)
+    tc.assertNotEqual(rs, -1)
+
     # second group of tests
     # print '\nChecking a max length key and value'
     key = random_string(128)
@@ -68,6 +73,10 @@ def test_put(url, tc):
     rs, ret_val = kv739_put(key, value)
     tc.assertEqual(rs, 0) # the key should exist
     check_last_put(tc, key, value)
+
+    # delete the value we just put(), then updated
+    rs, ret_val = kv739_delete(key)
+    tc.assertNotEqual(rs, -1)
 
     count += 1
 
