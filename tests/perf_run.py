@@ -45,8 +45,7 @@ def put_test(n=10000, n_key=128, n_val=128, IP=None):
         r, o_val = put(key, value)
         if r==-1:
             testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)+".perf" 
-            msg(0, opType, msgAppend+"Starting test: "+testName, "localhost", "test")
-            print "SERVER CRASHED CRASHED!!!!!"
+            msg(1, opType, msgAppend+"Server crashed: "+testName, "localhost", "test")
             time.sleep(1)
 
 def get_test(n=10000, n_key=128, n_val=128, IP=None):
