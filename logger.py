@@ -20,9 +20,12 @@ def getDate():
     return dt
 
 # print std message to console
-def msg(type, method, message, IP=None, caller='server'):
-    logMsg = getTime() + "|" + msgType[type] + "|" + str(os.getpid()) + "|" + IP + "|" \
-    + caller + "|" + method + "|" + message
+def msg(typ, method, message, IP=None, caller='server'):
+    logMsg = " | ".join([getTime(),
+                         str(msgType[typ]),
+                         str(os.getpid()),
+                         str(IP), str(caller), str(method),
+                         str(message)])
     if PRINT_TO_SCREEN:
         print(logMsg)
     if LOGGING_OFF: return
