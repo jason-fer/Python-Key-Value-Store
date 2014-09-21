@@ -37,9 +37,9 @@ def check_last_put(tc, key, value):
 
 def test_put(url, tc):
   count = 0
-  maxCount = 1
+  maxCount = 2
   # 9x operations per loop
-  print '\nRunning '+ str(maxCount * 11) +' random key and value updates'
+  print '\nRunning '+ str(maxCount * 12) +' random key and value tests'
   while count < maxCount:
     #****************** TEST GROUP 1 ******************
     
