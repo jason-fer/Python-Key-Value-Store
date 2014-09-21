@@ -14,13 +14,13 @@ def get_url(url=None):
 		url = "http://%s" % ( url )
 	return url
 
-def send(url, data=None ):
+def send(url, method, data=None):
 	try:
 		if data:
 			opener = urllib2.build_opener(urllib2.HTTPHandler)
-			request = urllib2.Request(url, data=data)
+			request = urllib2.Request(url, data=urllib.urlencode(data))
 			request.add_header('Content-Type', 'application/x-www-form-urlencoded ')
-			request.get_method = lambda: 'PUT'
+			request.get_method = lambda: method
 			d = opener.open(request)
 			j = json.loads(d.read())
 		else:
@@ -35,18 +35,19 @@ def send(url, data=None ):
 
 def get(key, url=None):
 	if not url:
-		get_url(url)
+		get_url(url, 'GET')
 	data = {'key' : key}
 	url_values = urllib.urlencode(data)
 	full_url = '%s?%s' % (url, url_values)
-	return send(full_url)
+	return send(full_url, 'GET')
 
-def put(key, value, url=None):
-	if not url:
-		get_url(url)
+def put(key, value, url):
 	data = {'key' : key, 'value': value}
-	enc_data = urllib.urlencode(data)
-	return send(url, enc_data)
+	return send(url, 'PUT', data)
+
+def delete(key, url):
+	data = {'key' : key}
+	return send(url, 'DELETE', data)
 
 def test_has_property(rs, tc, prop):
 	if rs.get(prop) == None:
@@ -77,7 +78,8 @@ def test_has_error(rs, tc, should):
 def test_get(url, tc):
 	print '\nChecking to see get result has a key'
 	rs = get('1', url)
-	test_has_property(rs, tc, 'key')
+	# 1 or 0 is Ok, -1 = not OK
+	tc.assertNotEqual(rs, 500)
 
 	print '\nChecking a get with a blank key'
 	rs = get('', url)
@@ -153,7 +155,7 @@ def test_put(url, tc):
 	key = random_string(127)
 	value = ''
 	rs = put(key, value, url)
-	tc.assertEqual(rs, 500)
+	tc.assertNotEqual(rs, 500)
 	# tc.assertTrue(test_has_error(rs, tc, True))
 	return True
 

@@ -30,7 +30,7 @@ def check_key(method_name, key):
 def check_value(method_name, value):
 	# throw error value not present
 	if not value: 
-		return  False, {'errors': [ method_name + ' requires a value'] }
+		return  True, ''
 
 	# throw error if value exceeds length limits
 	value_length = len(value.encode('utf-8'))
@@ -83,6 +83,9 @@ def get_value():
 def put_value():
 	client_ip = request.remote_addr
 	key = request.form.get('key', '')
+	if not key:
+		# this is just a backup since this is incorrect
+		key = request.args.get('key', '')
 	value = request.form.get('value', '')
 
 	#check the key
@@ -109,12 +112,12 @@ def put_value():
 
 def delete_key():
 	client_ip = request.remote_addr
-	key = request.args.get('key', '')
-        if not key:
-                key = request.form.get('key', '')
+	key = request.form.get('key', '')
+	if not key:
+		# this is just a backup since this is incorrect
+		key = request.args.get('key', '')
 	#check the key
 	ok, error_message = check_key('delete()', key)
-	key = request.form.get('key', '')
 	if not ok:
 		# 500 = error
 		return error_message, 500
@@ -122,7 +125,6 @@ def delete_key():
 	# retrieve the value
 	status, value = delete_in_db(key, client_ip);
 
-	# key wasn't present = 404 not found
 	if status == 1 or status == 0:
 		return  {'old_value': value }, 200
 	# system error = 500 server error

@@ -20,7 +20,7 @@ def get_url(url=None):
   return url
 
 def test_get(url, tc):
-  # print '\nChecking a get with a blank key'
+  print '\nChecking a get with a blank key'
   rs, error = kv739_get('')
   # -1 or 1 are OK, but 0 should never happen!
   tc.assertNotEqual(rs, 0)
@@ -36,9 +36,8 @@ def check_last_put(tc, key, value):
     tc.assertEqual(rs, 0)
 
 def test_put(url, tc):
-
   count = 0
-  maxCount = 2
+  maxCount = 1
   # 9x operations per loop
   print '\nRunning '+ str(maxCount * 11) +' random key and value updates'
   while count < maxCount:
@@ -63,7 +62,7 @@ def test_put(url, tc):
 
     #confirm the value no longer exists
     rs, ret_val = kv739_get(key)
-    tc.assertNotEqual(rs, 1) # the key should NOT exist
+    tc.assertNotEqual(rs, 0) # the key should NOT exist
 
     #****************** TEST GROUP 2 ******************
     # print '\nChecking a max length key and value'
@@ -85,7 +84,7 @@ def test_put(url, tc):
 
     #confirm the value no longer exists
     rs, ret_val = kv739_get(key)
-    tc.assertNotEqual(rs, 1) # the key should NOT exist
+    tc.assertNotEqual(rs, 0) # the key should NOT exist
 
     count += 1
 
@@ -102,18 +101,17 @@ def test_put(url, tc):
   rs, ret_val = kv739_put(key, value)
   tc.assertEqual(rs, -1)
 
-  # print '\nChecking an empty key'
+  print '\nChecking an empty key'
   key = ''
   value = random_string(2047)
   rs, ret_val = kv739_put(key, value)
   tc.assertNotEqual(rs, 0)
 
-  # brandon's implementation allows an empty value.
-  # print '\nChecking an empty val'
+  print '\nChecking an empty val'
   key = random_string(127)
   value = ''
   rs, ret_val = kv739_put(key, value)
-  tc.assertEqual(rs, -1)
+  tc.assertNotEqual(rs, -1)
   return True
 
 def UI(args):
@@ -143,7 +141,6 @@ def UI(args):
 
   print '\n>>>> All tests pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <<<<\n'
   ## try HTTP delete / put (both should throw errors)
-  
   exit(0)
 
 if __name__ == "__main__":
