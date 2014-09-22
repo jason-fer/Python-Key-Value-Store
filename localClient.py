@@ -56,7 +56,7 @@ def UI(args):
                         t1=now()
 			ret, o_val = client.kv739_put(key, value)
                         t2=now()
-                        print("Time:",str(t2-t1))
+                        print("Time:",str(float(t2)-float(t1)))
 			if ret not in [0,1,-1]:
 				print "Wrong return value:", ret
 			elif ret == 0:
