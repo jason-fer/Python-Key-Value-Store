@@ -25,6 +25,7 @@ python test_client.py http://seclab8.cs.wisc.edu:5000
 Brandon's server:
 python test_client.py http://adg-desktop-07.cs.wisc.edu:8080
 
+python test_client.py localhost:5000
 
 @todo:
 

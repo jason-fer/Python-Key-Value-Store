@@ -2,7 +2,6 @@ import urllib2
 import json
 import os, sys
 import urllib
-import requests 
 from config import *
 
 url = None
@@ -31,17 +30,20 @@ def kv739_get(key):
 	url_values = urllib.urlencode(data)
 	full_url = '%s?%s' % (url, url_values)
 	try:
-		d = requests.get(full_url)
-		if d.status_code == 404:
+		r = urllib2.urlopen(full_url)
+		content = r.read()
+		status_code = r.getcode()
+		if status_code == 404:
 			return 1, None # the key does not exist
-		elif d.status_code == 200:
-			r = json.loads(d.content)
+		elif status_code == 200:
+			r = json.loads(content)
 			value = r.get('value', '')
 			return 0, value
-		elif d.status_code == 500:
+		elif status_code == 500:
 			return -1, "ERROR!" 
-	except requests.ConnectionError, e:
-		return -1, "ERROR: %s" % e.error
+	except urllib2.HTTPError as e:
+		# print e.read()
+		return -1, "ERROR: %s" % e.code
 
 def kv739_put(key, value):
 	data = {'key' : key, 'value': value}
@@ -72,8 +74,9 @@ def kv739_delete(key):
 			return 0, value
 		elif status_code == 500:
 			return -1, "ERROR!"
-	except requests.ConnectionError, e:
-		return -1, "ERROR: %s" % e.error
+	except urllib2.HTTPError as e:
+		# print e.read()
+		return -1, "ERROR: %s" % e.code
 
 def http_put(url, data):
 	return send_request(url, 'PUT', data)

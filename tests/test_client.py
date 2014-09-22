@@ -1,5 +1,5 @@
 #For testing our client library as well as other client libraries.
-import urllib2, json, os, sys, urllib, unittest, string, random, requests
+import urllib2, json, os, sys, urllib, unittest, string, random
 sys.path.append("..")
 import client
 
