@@ -3,7 +3,6 @@ import json
 import os, sys
 import urllib
 import requests 
-from config import *
 
 url = None
 
