@@ -42,22 +42,44 @@ def put_test(n=10000, n_key=128, n_val=128, IP=None):
    global msgAppend
    for i in xrange(n):
         key, value = get_rand_string(n_key), get_rand_string(n_val)
+        t1=time.time()
         r, o_val = put(key, value)
+        t2=time.time()
         if r==-1:
-            testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)+".perf" 
-            msg(1, opType, msgAppend+"Server crashed: "+testName, "localhost", "test")
+            testName="put_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val) 
+            msg(1, opType, msgAppend+"Server crashed. Test="+testName+" n="+str(i), "localhost", "test")
             time.sleep(1)
+        else:
+            t="{0:.6f}".format(t2-t1)
+            perfResultObj.write(getTime()+",put,localhost,"+serverUrl+","+str(n)+","+str(n_key)+","+str(n_val)+","+str(n_key+n_val)+","+str(t)+"\n")
 
 def get_test(n=10000, n_key=128, n_val=128, IP=None):
     for i in xrange(n):
         key, value = get_rand_string(n_key), get_rand_string(n_val)
+        t1=time.time()
         r, val = get(key)
+        t2=time.time()
+        if r==-1:
+            testName="get_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)  
+            msg(1, opType, msgAppend+"Server crashed. Test="+testName+" n="+str(i), "localhost", "test")
+            time.sleep(1)
+        else:
+            t="{0:.6f}".format(t2-t1)
+            perfResultObj.write(getTime()+",get,localhost,"+serverUrl+","+str(n)+","+str(n_key)+","+str(n_val)+","+str(n_key+n_val)+","+str(t)+"\n")
 
 def delete_test(n=10000, n_key=128, n_val=128, IP=None):
     for i in xrange(n):
         key, value = get_rand_string(n_key), get_rand_string(n_val)
+        t1=time.time()
         r, val = delete(key)
-
+        t2=time.time()
+        if r==-1:
+            testName="del_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)  
+            msg(1, opType, msgAppend+"Server crashed. Test="+testName+" n="+str(i), "localhost", "test")
+            time.sleep(1)
+        else:
+            t="{0:.6f}".format(t2-t1)
+            perfResultObj.write(getTime()+",del,localhost,"+serverUrl+","+str(n)+","+str(n_key)+","+str(n_val)+","+str(n_key+n_val)+","+str(t)+"\n")
 
 def load_test(args):
     put_test(10000);
@@ -92,12 +114,17 @@ if __name__ == "__main__":
          print(getTime() + "|ERROR|" + str(os.getpid()) + "|" + myIP + "|" + opType + "|daily log file " + perfResFile + " cannot be accessed")
 
     call = ['get','put','delete']
-    num = [1,2,4,8,16,32,64,128,256,516,1024]
-    k_size = [1,64,128]
-    v_size = [1,1024,2048]
+    #num = [1,2,4,8,16,32,64,128,256,516,1024]
+    #k_size = [1,64,128]
+    #v_size = [1,1024,2048]
+    num = [64,256]
+    k_size = [1,32,64,96,128]
+    v_size = [1,516,1024,1540,2048]
     msgAppend="["+serverUrl+"] "
     for x in range(0,NUM_OF_TRIALS):
+        msg(0, opType, msgAppend+"Starting Trial #"+str(x), myIP, "test")
         for n in num:
+             print("TRIAL: "+str(x)+" ... N="+str(n))
              for k in k_size:
                  for v in v_size:
                      for t in call:
@@ -107,8 +134,9 @@ if __name__ == "__main__":
                              msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
                              #cProfile.run(testName) #,testFileName)
                              tm = timeit.timeit(stmt=testName, number=1, setup='from __main__ import get_test, put_test, delete_test')
-                             perfResultObj.write(getTime()+","+t+","+myIP+","+serverUrl+","+str(n)+","+str(k)+","+str(v)+","+str(tm)+","+str(tm/n)+"\n")
+                             #perfResultObj.write(getTime()+","+t+","+myIP+","+serverUrl+","+str(n)+","+str(k)+","+str(v)+","+str(tm)+","+str(tm/n)+"\n")
 			     msg(0, opType, msgAppend+"Test completed: "+testName, myIP, "test")
                              msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(tm), myIP, "test")
+                             print('.')
                          except:
                              msg(1, opType, msgAppend+"Unexcepted failure with test: "+testName, myIP, "test")

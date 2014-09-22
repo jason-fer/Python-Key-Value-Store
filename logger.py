@@ -24,8 +24,8 @@ def msg(typ, method, message, IP=None, caller='server'):
     logMsg = " | ".join([getTime(),
                          str(msgType[typ]),
                          str(os.getpid()),
-                         IP, caller, method,
-                         message])
+                         str(IP), str(caller), str(method),
+                         str(message)])
     if PRINT_TO_SCREEN:
         print(logMsg)
     if LOGGING_OFF: return

@@ -30,7 +30,7 @@ def check_key(method_name, key):
 def check_value(method_name, value):
 	# throw error value not present
 	if not value: 
-		return  False, {'errors': [ method_name + ' requires a value'] }
+		return  True, ''
 
 	# throw error if value exceeds length limits
 	value_length = len(value.encode('utf-8'))
@@ -83,6 +83,9 @@ def get_value():
 def put_value():
 	client_ip = request.remote_addr
 	key = request.form.get('key', '')
+	if not key:
+		# this is just a backup since this is incorrect
+		key = request.args.get('key', '')
 	value = request.form.get('value', '')
 
 	#check the key
@@ -109,12 +112,12 @@ def put_value():
 
 def delete_key():
 	client_ip = request.remote_addr
-	key = request.args.get('key', '')
-        if not key:
-                key = request.form.get('key', '')
+	key = request.form.get('key', '')
+	if not key:
+		# this is just a backup since this is incorrect
+		key = request.args.get('key', '')
 	#check the key
 	ok, error_message = check_key('delete()', key)
-	key = request.form.get('key', '')
 	if not ok:
 		# 500 = error
 		return error_message, 500
@@ -122,14 +125,13 @@ def delete_key():
 	# retrieve the value
 	status, value = delete_in_db(key, client_ip);
 
-	# key wasn't present = 404 not found
 	if status == 1 or status == 0:
 		return  {'old_value': value }, 200
 	# system error = 500 server error
 	else:
 		return  {'old_value': value, 'errors': [ 'unknown database error'] }, 500
 	
-@app.route('/', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/', methods=['GET', 'PUT', 'DELETE', 'OPTIONS'])
 def main():
 	if request.method == 'GET':
 		data, http_status = get_value() 
@@ -142,6 +144,45 @@ def main():
 	if request.method == 'DELETE':
 		data, http_status = delete_key() 
 		return json.dumps(data), http_status
+
+	if request.method == 'OPTIONS':
+		key = request.args.get('heartbeat', '');
+		if key:
+			return json.dumps({'heartbeat':'I am alive!!!'}), 200
+		else:
+			allowed_methods = {
+				'HTTP GET': [
+					{'arguments':'(string) key'},
+					{'description':'retrieve the value of a key'},
+					{'HTTP Status':'404 (key not found), 200 (key found), 500 (server error)'},
+					{'returns':'(string) value'},
+				],
+				'HTTP PUT': [
+					{'arguments':'(string) key, (string) value'},
+					{'description':'set the value of a key'},
+					{'HTTP Status':'201 (created), 200 (updated), 500 (server error)'},
+					{'returns':'(string) old_value, only on HTTP Status 200'},
+				],
+				'HTTP DELETE': [
+					{'arguments':'(string) key'},
+					{'description':'invalidate a key / value'},
+					{'HTTP Status':'200 (deleted), 500 (server error)'},
+					{'returns':'(string) value'},
+				],
+				'HTTP OPTIONS (heartbeat)': [
+					{'arguments':'(string) key'},
+					{'description':'pass the query string <url>?heartbeat=true'},
+					{'HTTP Status':'200 (server is alive), 500 (server error)'},
+					{'returns':'(JSON) {\'heartbeat\':\'I am alive!!!\'}'},
+				],
+				'HTTP OPTIONS': [
+					{'arguments':'None'},
+					{'description':'View arguments for all possible HTTP REQUEST methods'},
+					{'HTTP Status':'200 (server is alive), 500 (server error)'},
+					{'returns':'descriptions for all methods.'},
+				],
+			}
+			return json.dumps(allowed_methods), 200
 	else:
 		return json.dumps({'errors':['Not implemented']}), 405
 
