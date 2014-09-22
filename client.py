@@ -43,7 +43,6 @@ def kv739_get(key):
 	except requests.ConnectionError, e:
 		return -1, "ERROR: %s" % e.error
 
-
 def kv739_put(key, value):
 	data = {'key' : key, 'value': value}
 	status_code, content = http_put(url, data);
