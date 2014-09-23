@@ -1,4 +1,5 @@
 from flask import Flask, request, json
+sys.path.append('lib')
 import dbWorkers, cache
 from config import *
 # 500: error

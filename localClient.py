@@ -2,7 +2,8 @@ import urllib2
 import json
 import os, sys
 import urllib
-import requests 
+import requests
+sys.path.append('lib') 
 from config import *
 import client
 import time

@@ -1,5 +1,5 @@
 import os,sys, timeit
-sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+'/lib')
 
 import client
 import dbWorkers
