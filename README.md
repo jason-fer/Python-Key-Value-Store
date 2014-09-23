@@ -1,12 +1,13 @@
-+------------------------------------------------------------------------------- <br>
-| <b>CS 739 Distributed Systems Project 1</b> <br> <br>
++----------------------------------------------------------------------------------------- <br>
+| <b>CS 739 Distributed Systems Project 1</b> <br> 
+| <br>
 | <b>Authors:</b> Saikat Raphael Gomes, Jason Feriante, Rahul Chatterjee <br>
 | <b>Date:</b> 12 Sep 2014 <br>
 | <b>Emails:</b> saikat@cs.wisc.edu, feriante@cs.wisc.edu, rchat@cs.wisc.edu <br>
 | <b>Semester:</b> CS739 Spring 2014 <br>
 | <b>Section:</b> LEC 001 <br>
 | <b>Professor:</b> Michael Swift <br>
-+------------------------------------------------------------------------------- <br>
++----------------------------------------------------------------------------------------- <br>
  <br>
 <b>Our Group:</b> <br>
 Saikat Raphael Gomes <br>
