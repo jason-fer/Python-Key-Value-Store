@@ -84,6 +84,7 @@ def kv739_delete(key):
 		# print e.read()
 		return -1, "ERROR: %s" % e.code
 
+# HELPER METHODS 
 def http_put(url, data):
 	return send_request(url, 'PUT', data)
 
