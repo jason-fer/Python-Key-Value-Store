@@ -2,7 +2,7 @@ import urllib2
 import json
 import os, sys
 import urllib
-from config import *
+#from config import *
 
 url = None
 
@@ -14,7 +14,7 @@ def kv739_init(_url):
 		url = "http://%s" %_url
 	else:
 		url = _url
-        return 0
+		return 0
 	try:
 		urllib2.urlopen(url)
 		return 0 # success
@@ -41,13 +41,14 @@ def kv739_get(key):
 			return 0, value
 		elif status_code == 500:
 			return -1, "ERROR!" 
-                else:
-                        return -1, "WTF!!!!"
-	except requests.exceptions.ConnectionError as e:
-		return -1, "ERROR: %s" % e
+		else:
+			return -1, "WTF!!!!"
 	except urllib2.HTTPError as e:
-		# print e.read()
-		return -1, "ERROR: %s" % e.code
+		if e.code == 404:
+			return 1, None # the key does not exist
+		else:
+			# print e.read()
+			return -1, "ERROR: %s" % e.code
 
 
 def kv739_put(key, value):
