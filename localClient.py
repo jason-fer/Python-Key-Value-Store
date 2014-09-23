@@ -72,7 +72,7 @@ def UI(args):
                         t1=now()
 			ret, o_val = client.kv739_delete(key)
                         t2=now()
-                        print("Time:",str(t2-t1))
+                        print("Time:",str(float(t2)-float(t1)))
 			# delete the shit
 			print "Code:", ret
 			if ret == 200:

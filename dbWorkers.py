@@ -24,9 +24,10 @@ def startConnection(IP=''):
         myCursor = myConnection.cursor()
         isSuccess = 1
         msg(0, "START_DB", "Success. Connected to: " + DBNAME + "." + DBTABLE, IP)
-    except:
-        msg(1, "START_DB", "Fail. Couldn't connect to: " + DBNAME + "." + DBTABLE, IP)
-
+    except sqlite3.Error as e:
+        myCursor.execute(open('db/%s.sql' % DBNAME).read())
+        msg(1, "START_DB", " Fail! %s" % (e.args[0]) + DBNAME + "." + DBTABLE, IP)
+        
     return isSuccess
 
 # stopping DB connection
@@ -132,17 +133,18 @@ def put(key, value, IP=''):
         retFlag, oldValue = get(key, IP)
         if retFlag == -1:
             raise
-        elif retFlag == 1:
-            sqlSmt = "INSERT INTO " + DBTABLE + " VALUES ('" + key + "','" + value + "')"
+        elif retFlag == 1: # key not found
+            sqlSmt = "INSERT INTO " + DBTABLE + " VALUES ('" + key + "','" + value + "');"
             #msg(0, opType, "SQL: " + sqlSmt, IP)
             myCursor.execute(sqlSmt)
-            #msg(0, opType, "value='" + value[:20] + "' insert!", IP)
-        else:
-            sqlSmt = "UPDATE " + DBTABLE + " SET value='" + value + "' where key='" + key + "'"
+            myConnection.commit()
+        else: # key found
+            if oldValue != value:
+                sqlSmt = "UPDATE " + DBTABLE + " SET value='" + value + "' where key='" + key + "'"
+                myCursor.execute(sqlSmt)
+                myConnection.commit()
             #msg(0, opType, "SQL: " + sqlSmt, IP)
-            myCursor.execute(sqlSmt)
             #msg(0, opType, "value updated from '" + oldValue + "' to '" + value + "'", IP)
-        myConnection.commit()
         msg(0, opType, "successful", IP)
     except:
         msg(1, opType, "failed!", IP)

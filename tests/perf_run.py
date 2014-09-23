@@ -1,5 +1,6 @@
 import os,sys, timeit
-sys.path.insert(0,'../')
+sys.path.append(os.getcwd())
+
 import client
 import dbWorkers
 import random
@@ -38,55 +39,66 @@ def get_rand_string(n=128):
                                  string.digits + ' ') for _ in range(n))
 
 
-def put_test(n=10000, n_key=128, n_val=128, IP=None):
-   global msgAppend
-   for i in xrange(n):
-        key, value = get_rand_string(n_key), get_rand_string(n_val)
+def put_test(n=10000, s_key=128, s_val=128, IP=None, **kwargs):
+    global msgAppend
+    for i in xrange(n):
+        key, value = get_rand_string(s_key), get_rand_string(s_val)
         t1=time.time()
         r, o_val = put(key, value)
         t2=time.time()
         if r==-1:
-            testName="put_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val) 
+            testName="put_n-%d_k-%d_v-%d" % (n, s_key, s_val)
             msg(1, opType, msgAppend+"Server crashed. Test="+testName+" n="+str(i), "localhost", "test")
             time.sleep(1)
         else:
             t="{0:.6f}".format(t2-t1)
-            perfResultObj.write(getTime()+",put,localhost,"+serverUrl+","+str(n)+","+str(n_key)+","+str(n_val)+","+str(n_key+n_val)+","+str(t)+"\n")
+            perfResultObj.write(getTime()+",put,localhost,"+serverUrl+","+str(n)+","+str(s_key)+","+str(s_val)+","+str(s_key+s_val)+","+str(t)+"\n")
 
-def get_test(n=10000, n_key=128, n_val=128, IP=None):
+def get_test(n=10000, s_key=128, s_val=128, IP=None):
     for i in xrange(n):
-        key, value = get_rand_string(n_key), get_rand_string(n_val)
+        key, value = get_rand_string(s_key), get_rand_string(s_val)
         t1=time.time()
         r, val = get(key)
         t2=time.time()
         if r==-1:
-            testName="get_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)  
-            msg(1, opType, msgAppend+"Server crashed. Test="+testName+" n="+str(i), "localhost", "test")
+            testName="get_n-"+str(n)+"_k-"+str(s_key)+"_v-"+str(s_val)  
+            msg(1, opType, msgAppend+"Server crashed. Test="+testName+" k="+key, "localhost", "test")
             time.sleep(1)
         else:
             t="{0:.6f}".format(t2-t1)
-            perfResultObj.write(getTime()+",get,localhost,"+serverUrl+","+str(n)+","+str(n_key)+","+str(n_val)+","+str(n_key+n_val)+","+str(t)+"\n")
+            perfResultObj.write(getTime()+",get,localhost,"+serverUrl+","+str(n)+","+str(s_key)+","+str(s_val)+","+str(s_key+s_val)+","+str(t)+"\n")
 
-def delete_test(n=10000, n_key=128, n_val=128, IP=None):
+def delete_test(n=10000, s_key=128, s_val=128, IP=None):
     for i in xrange(n):
-        key, value = get_rand_string(n_key), get_rand_string(n_val)
+        key, value = get_rand_string(s_key), get_rand_string(s_val)
         t1=time.time()
         r, val = delete(key)
         t2=time.time()
         if r==-1:
-            testName="del_n-"+str(n)+"_k-"+str(n_key)+"_v-"+str(n_val)  
+            testName="del_n-"+str(n)+"_k-"+str(s_key)+"_v-"+str(s_val)  
             msg(1, opType, msgAppend+"Server crashed. Test="+testName+" n="+str(i), "localhost", "test")
             time.sleep(1)
         else:
             t="{0:.6f}".format(t2-t1)
-            perfResultObj.write(getTime()+",del,localhost,"+serverUrl+","+str(n)+","+str(n_key)+","+str(n_val)+","+str(n_key+n_val)+","+str(t)+"\n")
+            perfResultObj.write(getTime()+",del,localhost,"+serverUrl+","+str(n)+","+str(s_key)+","+str(s_val)+","+str(s_key+s_val)+","+str(t)+"\n")
 
-def load_test(args):
-    put_test(10000);
-    pass
+def wrapper(args):
+    func, arg = args[0], args[1:]
+    return func(*arg)
 
+def throughput_test(func, n=10000, s_key=128, s_val=128, IP=None):
+    from multiprocessing  import Pool
+    pool_cnt = 20
+    p = Pool(pool_cnt)
+    per_pool_n = n/pool_cnt
+    p.map(wrapper, [(func, 
+                     per_pool_n,
+                     s_key,
+                     s_val,
+                     IP) for x in xrange(pool_cnt)])
+    
 if __name__ == "__main__":
-    NUM_OF_TRIALS=5
+    NUM_OF_TRIALS=2
     serverUrl=sys.argv[1]
     if PERF_TEST_SERVER:
         serverUrl="localhost"
@@ -117,26 +129,30 @@ if __name__ == "__main__":
     #num = [1,2,4,8,16,32,64,128,256,516,1024]
     #k_size = [1,64,128]
     #v_size = [1,1024,2048]
-    num = [64,256]
+    num = [2000]
     k_size = [1,32,64,96,128]
     v_size = [1,516,1024,1540,2048]
+
     msgAppend="["+serverUrl+"] "
-    for x in range(0,NUM_OF_TRIALS):
+    for x in range(1,NUM_OF_TRIALS+1):
         msg(0, opType, msgAppend+"Starting Trial #"+str(x), myIP, "test")
         for n in num:
+             print "=="*30
              print("TRIAL: "+str(x)+" ... N="+str(n))
-             for k in k_size:
-                 for v in v_size:
-                     for t in call:
-                         try:
-                             testName=t+"_test("+str(n)+","+str(k)+","+str(v)+")"
-                             testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf" 
-                             msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
+             for k,v in zip(k_size, v_size):
+                 #for v in v_size:
+                 for t in call:
+                     try:
+                         testName="throughput_test(%s_test, %d, %d, %d)" %(t, n, k, v)
+                         testFileName=logParentDir+"/"+t+"_n-"+str(n)+"_k-"+str(k)+"_v-"+str(v)+".perf" 
+                         msg(0, opType, msgAppend+"Starting test: "+testName, myIP, "test")
                              #cProfile.run(testName) #,testFileName)
-                             tm = timeit.timeit(stmt=testName, number=1, setup='from __main__ import get_test, put_test, delete_test')
+                         tm = timeit.timeit(stmt=testName, number=1, 
+                                            setup='from __main__ import get_test, put_test, delete_test, throughput_test ')
                              #perfResultObj.write(getTime()+","+t+","+myIP+","+serverUrl+","+str(n)+","+str(k)+","+str(v)+","+str(tm)+","+str(tm/n)+"\n")
-			     msg(0, opType, msgAppend+"Test completed: "+testName, myIP, "test")
-                             msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(tm), myIP, "test")
-                             print('.')
-                         except:
-                             msg(1, opType, msgAppend+"Unexcepted failure with test: "+testName, myIP, "test")
+                         print testName, tm
+                         #msg(0, opType, msgAppend+"Test completed: "+testName, myIP, "test")
+                         #msg(0, opType, msgAppend+"Time taken: "+testName+": " + str(tm), myIP, "test")
+                         #print('.')
+                     except KeyError:
+                         msg(1, opType, msgAppend+"Unexcepted failure with test: "+testName, myIP, "test")
