@@ -34,7 +34,7 @@ python test/perf_test.py seclab8.cs.wisc.edu:5000<br>
 <br>
 <b>Team 2's server:</b><br>
 python test/test_client.py adg-desktop-07.cs.wisc.edu:8080<br>
-python test/perf_test.py seclab8.cs.wisc.edu:<br>
+python test/perf_test.py adg-desktop-07.cs.wisc.edu:8080<br>
 <br>
 <b>Doc:</b><br>
 https://docs.google.com/document/d/1U_zBiVdV0bfR2lnHPU7uXOd4Hwt8cKQ7wStdRAUtHr8/edit<br>
