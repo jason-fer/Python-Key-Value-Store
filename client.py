@@ -47,8 +47,8 @@ def kv739_get(key):
 		if e.code == 404:
 			return 1, None # the key does not exist
 		else:
-		# print e.read()
-		return -1, "ERROR: %s" % e.code
+			# print e.read()
+			return -1, "ERROR: %s" % e.code
 
 
 def kv739_put(key, value):
