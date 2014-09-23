@@ -9,6 +9,3 @@ PRINT_TO_SCREEN = False
 DBNAME = "allData"
 DBTABLE = "allData"
 
-import logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
