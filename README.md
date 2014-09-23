@@ -27,6 +27,9 @@ python test_client.py http://adg-desktop-07.cs.wisc.edu:8080
 
 python test_client.py localhost:5000
 
+Doc:
+https://docs.google.com/document/d/1U_zBiVdV0bfR2lnHPU7uXOd4Hwt8cKQ7wStdRAUtHr8/edit
+
 @todo:
 
 Performance Tests:
