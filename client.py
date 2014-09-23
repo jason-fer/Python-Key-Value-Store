@@ -47,8 +47,7 @@ def kv739_get(key):
 	except requests.exceptions.ConnectionError as e:
 		return -1, "ERROR: %s" % e
 	except urllib2.HTTPError as e:
-		# print e.read()
-		return -1, "ERROR: %s" % e.code
+		return 1, "ERROR: %s" % e.code
 
 
 def kv739_put(key, value):
