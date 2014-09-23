@@ -19,7 +19,7 @@ def send(url, method, data=None):
 		if data:
 			opener = urllib2.build_opener(urllib2.HTTPHandler)
 			request = urllib2.Request(url, data=urllib.urlencode(data))
-			request.add_header('Content-Type', 'application/x-www-form-urlencoded ')
+			request.add_header('Content-Type', 'application/x-www-form-urlencoded')
 			request.get_method = lambda: method
 			d = opener.open(request)
 			j = json.loads(d.read())
