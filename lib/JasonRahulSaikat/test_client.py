@@ -29,6 +29,16 @@ def test_get(tc):
   rs, error = kv739_get(random_string(129))
   tc.assertEqual(rs, -1)
 
+  print '\nChecking a get with a bad key ]'
+  bad_key = random_string(20) + "]" + random_string(20)
+  rs, error = kv739_get(bad_key)
+  tc.assertEqual(rs, -1)
+
+  print '\nChecking a get with a bad key ['
+  bad_key = random_string(20) + "[" + random_string(20)
+  rs, error = kv739_get(bad_key)
+  tc.assertEqual(rs, -1)
+
 def check_last_put(tc, key, value):
     # print 'Confirm we can kv739_get() the value we just put()'
     rs, ret_val = kv739_get(key)
