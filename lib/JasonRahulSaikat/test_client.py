@@ -122,6 +122,31 @@ def test_put(tc):
   value = ''
   rs, ret_val = kv739_put(key, value)
   tc.assertNotEqual(rs, -1)
+
+  print '\nChecking a put with a bad key ]'
+  key = random_string(20) + "]" + random_string(20)
+  value = random_string(2047)
+  rs, ret_val = kv739_put(key, value)
+  tc.assertEqual(rs, -1)
+
+  print '\nChecking a put with a bad key ['
+  key = random_string(20) + "[" + random_string(20)
+  value = random_string(2047)
+  rs, ret_val = kv739_put(key, value)
+  tc.assertEqual(rs, -1)
+
+  print '\nChecking a put with a bad value ['
+  key = random_string(20)
+  value = random_string(200) + "[" + random_string(200)
+  rs, ret_val = kv739_put(key, value)
+  tc.assertEqual(rs, -1)
+
+  print '\nChecking a put with a bad value ['
+  key = random_string(20)
+  value = random_string(200) + "[" + random_string(200)
+  rs, ret_val = kv739_put(key, value)
+  tc.assertEqual(rs, -1)
+  
   return True
 
 def main(args):
