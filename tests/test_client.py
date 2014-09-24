@@ -1,8 +1,8 @@
 #For testing our client library as well as other client libraries.
 import urllib2, json, os, sys, urllib, unittest, string, random
 
-#sys.path.append(os.getcwd()+'/lib')
-sys.path.append(os.getcwd() + '/CS739-project1/ArkoBrandonChaitan/')
+parent_dir = os.path.dirname(os.getcwd())
+sys.path.append(parent_dir + '/lib/JasonRahulSaikat')
 import client
 
 kv739_init = client.kv739_init #url

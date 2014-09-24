@@ -76,13 +76,21 @@ def test_has_error(rs, tc, should):
 			return False
 
 def test_get(url, tc):
-	print '\nChecking to see get result has a key'
-	rs = get('1', url)
-	# 1 or 0 is Ok, -1 = not OK
-	tc.assertNotEqual(rs, 500)
+	# print '\nChecking to see get result has a key'
+	# rs = get('1', url)
+	# # 1 or 0 is Ok, -1 = not OK
+	# tc.assertNotEqual(rs, 500)
 
 	print '\nChecking a get with a blank key'
 	rs = get('', url)
+	tc.assertEqual(rs, 500)
+
+	print '\nChecking a get with an illegal [ key'
+	rs = get(random_string(30)+'['+random_string(30), url)
+	tc.assertEqual(rs, 500)
+
+	print '\nChecking a get with an illegal ] key'
+	rs = get(random_string(30)+']'+random_string(30), url)
 	tc.assertEqual(rs, 500)
 
 	print '\nChecking a get with a key over 128 bytes'
@@ -100,16 +108,16 @@ def test_put(url, tc):
 		key = random_string(20)
 		value = random_string(200)
 		rs = put(key, value, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
+		# tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# print 'Confirm we can get() the value we just put()'
 		rs = get(key, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
+		# tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# print 'Confirm we can update the value we just put()'
 		value = random_string(200)
 		rs = put(key, value, url)
-		tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
+		# tc.assertTrue(test_has_right_val(rs, tc, 'value', value))
 
 		# second group of tests
 		# print '\nChecking a max length key and value'
@@ -157,6 +165,21 @@ def test_put(url, tc):
 	rs = put(key, value, url)
 	tc.assertNotEqual(rs, 500)
 	# tc.assertTrue(test_has_error(rs, tc, True))
+	
+	print '\nChecking a put with an illegal ] key'
+	value = random_string(1024)
+	key = random_string(30)+']'+random_string(30)
+	rs = get(key, value, url)
+	rs = put(key, value, url)
+	tc.assertEqual(rs, 500)
+
+	print '\nChecking a put with an illegal ] key'
+	value = random_string(1024)
+	key = random_string(30)+'['+random_string(30)
+	rs = get(key, value, url)
+	rs = put(key, value, url)
+	tc.assertEqual(rs, 500)
+
 	return True
 
 def UI(args):

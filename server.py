@@ -1,5 +1,5 @@
 from flask import Flask, request, json
-import os, sys
+import os, sys, urllib
 sys.path.append(os.getcwd()+'/lib')
 import dbWorkers, cache
 
@@ -21,6 +21,9 @@ def check_key(method_name, key):
 	if not key: 
 		return  False, {'errors': [ method_name + ' requires a key']}
 
+	if ']' in key.encode('utf-8') or ']' in key.encode('utf-8'):
+		return  False, {'errors': [ method_name + ' does not allow characters: ] or [ ']}
+
 	# throw error if key exceeds length limits
 	key_length = len(key.encode('utf-8'))
 	if key_length > 128:
@@ -34,6 +37,9 @@ def check_value(method_name, value):
 	# throw error value not present
 	if not value: 
 		return  True, ''
+
+	if ']' in value.encode('utf-8') or ']' in value.encode('utf-8'):
+		return  False, {'errors': [ method_name + ' does not allow characters: ] or [ ']}
 
 	# throw error if value exceeds length limits
 	value_length = len(value.encode('utf-8'))
