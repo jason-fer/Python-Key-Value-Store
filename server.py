@@ -23,7 +23,7 @@ def check_key(method_name, key):
 
 	# throw error if key exceeds length limits
 	key_length = len(key.encode('utf-8'))
-	if key_length > 128:
+	if key_length > 128 and '[' not in key and ']' not in key:
 		return  False, {'errors': [ method_name + ' key was ' 
 		+  str(key_length) + ' bytes. This exceeds the 128 byte limit'] }
 
@@ -37,7 +37,7 @@ def check_value(method_name, value):
 
 	# throw error if value exceeds length limits
 	value_length = len(value.encode('utf-8'))
-	if value_length > 2048:	
+	if value_length > 2048  and '[' not in value and ']' not in value:	
 		return  False, {'errors': [ method_name + ' value was ' 
 		+ str(value_length) + ' bytes. This exceeds the 2048 byte limit'] }
 
