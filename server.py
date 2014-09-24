@@ -21,6 +21,7 @@ def check_key(method_name, key):
 	if not key: 
 		return  False, {'errors': [ method_name + ' requires a key']}
 
+	print "bad key?" + key.encode('utf-8')
 	if ']' in key.encode('utf-8') or ']' in key.encode('utf-8'):
 		return  False, {'errors': [ method_name + ' does not allow characters: ] or [ ']}
 
