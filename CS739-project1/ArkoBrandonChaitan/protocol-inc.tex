@@ -1,0 +1,96 @@
+% Needs \usepackage[T1]{fontenc} in the file which \input{}s this one
+\section*{Protocol}
+\subsection*{Client Module}
+Because we chose to work in python, and the types and "out parameter"
+conventions differ, we describe the functions of our importable module here. %
+
+\begin{description}
+  \item[kv739\_init(server)] Takes a string indicating the server in the format
+                             "host:port" and initializes client code. Returns 0
+                             on success or -1 on failure.
+  \item[kv739\_get(key)] Takes a key string and requests the value for that key
+                         from the server. If the key is present, return a tuple
+                         (0, value). If not present, return tuple (1,
+                         <undefined>). If there is a failure, return tuple (-1,
+                         <undefined>).
+  \item[kv739\_put(key, value)] Takes strings key and value and (1) requests the
+                                old value for key and (2) requests the server to
+                                store the given value for the key. Returns tuple
+                                (0, old\_value) on success if there was an old
+                                value. Returns tuple (1, <undefined>) on success
+                                otherwise. Returns (-1, <undefined>) on failure.
+  \item[kv739\_delete(key)] Takes a key string and (1) requests the old value
+                            for key and (2) requests the server delete its
+                            [key, value] mapping for the given key. Returns tuple
+                            (0, old\_value) on success if there was a mapping.
+                            Returns tuple (1, <undefined>) on success if the key
+                            had no value on the server. Returns (-1, <undefined>)
+                            on failure.
+\end{description}
+
+\subsection*{Network Protocol}
+We defined our protocol using HTTP GET, PUT, and DELETE. The requests,
+responses, and semantics are defined below.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|r|l|}
+    \hline
+    \multicolumn{2}{|l|}{GET Request} \\ \hline
+    URL & <HOST>:<PORT>/?key=<KEY> \\
+    Headers & \\
+    Body & \\ \hline
+    \multicolumn{2}{|l|}{Response} \\ \hline
+    Code & 200 if exists, 404 if not, 500 if error \\
+    Body & JSON \{value: <VALUE>, *errors: [<ERROR STRINGS>]\} \\ \hline
+    \multicolumn{2}{|l|}{Description} \\ \hline
+    \multicolumn{2}{|p{0.75\textwidth}|}{Server gets the key to lookup from
+                         query string. If a value is found, 200 is returned and
+                         the value field of the returned JSON object is set. If
+                         a value is not found, 404 is returned. If problem(s)
+                         are encountered, 500 is returned and error strings may
+                         be returned in the JSON object.} \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|r|l|}
+    \hline
+    \multicolumn{2}{|l|}{PUT Request} \\ \hline
+    URL & <HOST>:<PORT>/ \\
+    Headers & Content-Type: application/x-www-form-urlencoded \\
+    Body & urlencoded(key=<KEY>\&value=<VALUE>) \\ \hline
+    \multicolumn{2}{|l|}{Response} \\ \hline
+    Code & 200 if old value, 201 if newly created, 500 if error \\
+    Body & JSON \{old\_value: <VALUE>, *errors: [<ERROR STRINGS>]\} \\ \hline
+    \multicolumn{2}{|l|}{Description} \\ \hline
+    \multicolumn{2}{|p{0.75\textwidth}|}{Server gets key and new value from the
+                         body of the request. If the key already has a mapping,
+                         200 is returned and the old\_value field of the JSON
+                         object is set. If not, 201 is returned. If problem(s)
+                         are encountered, 500 is returned and error strings may
+                         be returned in the JSON object.} \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|r|l|}
+    \hline
+    \multicolumn{2}{|l|}{DELETE Request} \\ \hline
+    URL & <HOST>:<PORT>/ \\
+    Headers & Content-Type: application/x-www-form-urlencoded \\
+    Body & urlencoded(key=<KEY>) \\ \hline
+    \multicolumn{2}{|l|}{Response} \\ \hline
+    Code & 200 if success, 500 if error \\
+    Body & JSON \{old\_value: <VALUE>, *errors: [<ERROR STRINGS>]\} \\ \hline
+    \multicolumn{2}{|l|}{Description} \\ \hline
+    \multicolumn{2}{|p{0.75\textwidth}|}{Server gets key to delete from the body
+                         of the request. On success return 200, and if the key
+                         had a mapping, the old\_value field of the JSON object
+                         is set. If problem(s) are encountered, 500 is returned
+                         and error strings may be returned in the JSON object.}
+                         \\ \hline
+  \end{tabular}
+\end{table}

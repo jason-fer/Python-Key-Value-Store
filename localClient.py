@@ -14,7 +14,7 @@ def get_url(l_url=None):
 	if not l_url:
 		l_url = raw_input("\nServer:  <IP>:<port>\n")
 	# check ip_port format
-	if l_url.startswith('http'):
+	if not l_url.startswith('http'):
 		l_url = "http://%s" % ( l_url )
         url = l_url
 
