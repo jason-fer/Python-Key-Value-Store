@@ -3,7 +3,9 @@ import json
 import os, sys
 import urllib
 import requests
-sys.path.append('lib') 
+
+sys.path.append(os.getcwd() + '/CS739-project1/ArkoBrandonChaitan/')
+#sys.path.append('lib') 
 from config import *
 import client
 import time
@@ -26,11 +28,11 @@ def now():
 url = None
 def UI(args):
 	global url
-	if len(args)>1:
-		get_url(args[1])
-	else:
-		get_url()
-	print url
+	# if len(args)>1:
+	# 	get_url(args[1])
+	# else:
+	# 	get_url()
+	url = args[1]
 	con = client.kv739_init(url)
 	if con==-1:
 		print "Connection refused!"

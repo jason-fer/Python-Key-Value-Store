@@ -117,10 +117,8 @@ def test_put(tc):
   return True
 
 def main(args):
-  if len(args) > 1:
-    url = get_url(args[1])
-  else:
-    url = get_url()
+  global url;
+  url = args[1]
 
   print '\n+-------------------------------+'
   print 'init server: kv739_init(' + url + ')'

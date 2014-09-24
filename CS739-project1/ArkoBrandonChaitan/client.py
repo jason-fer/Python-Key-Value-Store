@@ -7,9 +7,11 @@ def kv739_init(server):
   global URL
   code = 0
   URL = 'http://%s/' % (server)
+  print URL
   try:
     requests.head(URL, stream=False)
   except requests.exceptions.ConnectionError as e:
+    print e
     sys.stderr.write('Could not connect to server at %s\n' % (server,))
     code = -1
     URL = None
