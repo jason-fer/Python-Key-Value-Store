@@ -1,6 +1,8 @@
 from flask import Flask, request, json
-sys.path.append('lib')
+import os, sys
+sys.path.append(os.getcwd()+'/lib')
 import dbWorkers, cache
+
 from config import *
 # 500: error
 # 404: key doesn't exist
