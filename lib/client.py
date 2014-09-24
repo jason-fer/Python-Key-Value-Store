@@ -39,7 +39,7 @@ def kv739_get(key):
 			r = json.loads(content)
 			value = r.get('value', '')
 			return 0, value
-		else status_code == 500:
+		elif status_code == 500:
 			return -1, "ERROR!" 
 	except urllib2.HTTPError as e:
 		if e.code == 404:
