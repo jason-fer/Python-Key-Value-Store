@@ -1,8 +1,12 @@
 import os,sys, timeit
-sys.path.append(os.getcwd())
-from config import *
-sys.path.append(os.getcwd()+'/lib')
+
+sys.path.append(os.getcwd() + '/CS739-project1/AnushaGeraldNavneet/')
 import client
+
+sys.path.append(os.getcwd() + '/lib')
+sys.path.append(os.getcwd())
+
+from config import *
 import dbWorkers
 import random
 import time
@@ -88,7 +92,7 @@ def wrapper(args):
 
 def throughput_test(func, n=10000, s_key=128, s_val=128, IP=None):
     from multiprocessing  import Pool
-    pool_cnt = 20
+    pool_cnt = 2
     p = Pool(pool_cnt)
     per_pool_n = n/pool_cnt
     p.map(wrapper, [(func, 
@@ -129,7 +133,7 @@ if __name__ == "__main__":
     #num = [1,2,4,8,16,32,64,128,256,516,1024]
     #k_size = [1,64,128]
     #v_size = [1,1024,2048]
-    num = [10]
+    num = [500]
     k_size = [1,32,64,96,128]
     v_size = [1,516,1024,1540,2048]
 
