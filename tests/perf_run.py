@@ -1,15 +1,15 @@
 import os,sys, timeit
-sys.path.append(os.getcwd())
-from config import *
+
 sys.path.append(os.getcwd()+'/lib')
 import client
-import dbWorkers
+
 import random
 import time
 import string
 import cProfile
-import logger
 import timeit
+import time
+import datetime
 
 PERF_TEST_SERVER=False
 
@@ -24,14 +24,66 @@ else:
      delete=client.kv739_delete
      init=client.kv739_init
 
-msg=logger.msg
-getTime=logger.getTime
-getDate=logger.getDate
 perfResultObj=None
 
 myIP = "localhost"
 opType = "PERF"
 msgAppend=""
+logFileObj = None
+msgType = ["INFO", "ERROR"]
+PRINT_TO_SCREEN = False
+LOGGING_OFF = True
+
+def getTime():
+    ts = time.time()
+    dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d|%H:%M:%S|%f')
+    return dt
+
+def msg(typ, method, message, IP=None, caller='server'):
+    logMsg = " | ".join([getTime(),
+                         str(msgType[typ]),
+                         str(os.getpid()),
+                         str(IP), str(caller), str(method),
+                         str(message)])
+    if PRINT_TO_SCREEN:
+        print(logMsg)
+    if LOGGING_OFF: return
+    global logFileObj
+    opType = "LOGGING"
+    if not IP:
+        IP = "<client_unknown>"
+    dt = getDate()
+    logParentDir = 'log'
+    logFile = logParentDir + '/' + dt + ".log"
+    if not os.path.isdir(logParentDir):
+        print(getTime() + "|" + msgType[0] + "|" + str(os.getpid()) + "|" + IP + "|" \
+              + opType + "|creating parent log dir")
+        try:
+            os.makedirs(logParentDir)
+            print(getTime() + "|" + msgType[0] + "|" + str(os.getpid()) + "|" + IP + "|" \
+                  + opType + "|parent log folder created: " + logParentDir)
+        except:
+            print(getTime() + "|" + msgType[1] + "|" + str(os.getpid()) + "|" + IP + "|" \
+                  + opType + "|parent log  folder could not be created at " + logParentDir)
+    if not logFileObj:
+        if not os.path.exists(logFile):
+            print(getTime() + "|" + msgType[0] + "|" + str(os.getpid()) + "|" + IP + "|" \
+                  + opType + "|creating daily log file: " + logFile)
+            try:
+                logFileObj = open(logFile, "a")
+                print(getTime() + "|" + msgType[0] + "|" + str(os.getpid()) + "|" + IP + "|" \
+                      + opType + "|daily log file created: " + logFile)
+            except:
+                print(getTime() + "|" + msgType[1] + "|" + str(os.getpid()) + "|" + IP + "|" \
+                      + opType + "|daily log file " + logFile + " cannot be created!!!")
+    try:
+        logFileObj = open(logFile, "a")
+    except:
+        print(getTime() + "|" + msgType[1] + "|" + str(os.getpid()) + "|" + IP + "|" \
+              + opType + "|daily log file " + logFile + " cannot be accessed")
+    if logFileObj:
+        logFileObj.write(logMsg + "\n")
+
 
 def get_rand_string(n=128):
     return ''.join(random.choice(string.ascii_uppercase + \
@@ -88,7 +140,7 @@ def wrapper(args):
 
 def throughput_test(func, n=10000, s_key=128, s_val=128, IP=None):
     from multiprocessing  import Pool
-    pool_cnt = 20
+    pool_cnt = 2
     p = Pool(pool_cnt)
     per_pool_n = n/pool_cnt
     p.map(wrapper, [(func, 
@@ -98,10 +150,17 @@ def throughput_test(func, n=10000, s_key=128, s_val=128, IP=None):
                      IP) for x in xrange(pool_cnt)])
     
 if __name__ == "__main__":
-    NUM_OF_TRIALS=5
-    serverUrl=sys.argv[1]
+    NUM_OF_TRIALS=3
+    serverUrl = ""
+    if len(sys.argv)>=2:
+        serverUrl=sys.argv[1]
+    else:
+        print "Give the host:port"
+        exit(0)
+
     if PERF_TEST_SERVER:
         serverUrl="localhost"
+
     init(serverUrl)
     logParentDir = 'log'
     perfResFile=logParentDir+"/perf_result.csv"
@@ -129,7 +188,7 @@ if __name__ == "__main__":
     #num = [1,2,4,8,16,32,64,128,256,516,1024]
     #k_size = [1,64,128]
     #v_size = [1,1024,2048]
-    num = [10]
+    num = [20]
     k_size = [1,32,64,96,128]
     v_size = [1,516,1024,1540,2048]
 
