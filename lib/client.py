@@ -73,11 +73,12 @@ def kv739_delete(key):
 	data = {'key' : key}
 	try:
 		status_code, content = http_delete(url, data)
-		if status_code == 404:
-			return 1, '' # the key does not exist
-		elif status_code == 200:
+		if status_code == 200:
 			value = content.get('old_value', '')
-			return 0, value
+			if value:
+				return 0, value
+			else:
+				return 1, value
 		elif status_code == 500:
 			return -1, "ERROR!"
 	except urllib2.HTTPError as e:
