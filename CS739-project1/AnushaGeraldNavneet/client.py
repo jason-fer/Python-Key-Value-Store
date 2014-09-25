@@ -33,14 +33,15 @@ def kv739_init(server_address, print_errors=True):
 
 	global global_client
 	global_client = SingleServerClient(server_address)
-
+	
 	try:
 		global_client.get('dummykey')
+		return 0
 	except ConnectionError as e:
 		print 'Could not get a connection! Error was: ', e
 		return -1
 	except Exception as e:
-		raise e
+		return -1
 
 @catch_errors
 def kv739_get(key):

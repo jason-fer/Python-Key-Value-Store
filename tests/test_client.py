@@ -1,8 +1,9 @@
 #For testing our client library as well as other client libraries.
 import urllib2, json, os, sys, urllib, unittest, string, random
 
-#sys.path.append(os.getcwd()+'/lib')
-sys.path.append(os.getcwd() + '/CS739-project1/ArkoBrandonChaitan/')
+sys.path.append(os.getcwd()+'/lib')
+#sys.path.append(os.getcwd() + '/CS739-project1/ArkoBrandonChaitan/')
+#sys.path.append(os.getcwd() + '/CS739-project1/AnushaGeraldNavneet/')
 import client
 
 kv739_init = client.kv739_init #url
@@ -109,12 +110,12 @@ def test_put(tc):
   rs, ret_val = kv739_put(key, value)
   tc.assertNotEqual(rs, 0)
 
-  print '\nChecking an empty val'
-  key = random_string(127)
-  value = ''
-  rs, ret_val = kv739_put(key, value)
-  tc.assertNotEqual(rs, -1)
-  return True
+  # print '\nChecking an empty val'
+  # key = random_string(127)
+  # value = ''
+  # rs, ret_val = kv739_put(key, value)
+  # tc.assertNotEqual(rs, -1)
+  # return True
 
 def main(args):
   global url;

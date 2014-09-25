@@ -4,8 +4,8 @@ import os, sys
 import urllib
 import requests
 
-sys.path.append(os.getcwd() + '/CS739-project1/AnushaGeraldNavneet/')
-#sys.path.append('lib') 
+#sys.path.append(os.getcwd() + '/CS739-project1/AnushaGeraldNavneet/')
+sys.path.append('lib') 
 from config import *
 import client
 import time

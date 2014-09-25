@@ -102,7 +102,7 @@ def throughput_test(func, n=10000, s_key=128, s_val=128, IP=None):
                      IP) for x in xrange(pool_cnt)])
     
 if __name__ == "__main__":
-    NUM_OF_TRIALS=5
+    NUM_OF_TRIALS=3
     serverUrl=sys.argv[1]
     if PERF_TEST_SERVER:
         serverUrl="localhost"
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     #num = [1,2,4,8,16,32,64,128,256,516,1024]
     #k_size = [1,64,128]
     #v_size = [1,1024,2048]
-    num = [500]
+    num = [50]
     k_size = [1,32,64,96,128]
     v_size = [1,516,1024,1540,2048]
 

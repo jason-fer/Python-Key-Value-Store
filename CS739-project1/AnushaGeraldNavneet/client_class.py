@@ -5,7 +5,7 @@ from hash_ring import HashRing
 
 # Confirm this with Jason and Brandon
 GET_codes = {200:0, 404:1, 500:-1}
-PUT_codes = {200:1, 201:0, 500:-1}
+PUT_codes = {200:0, 201:1, 500:-1}
 DEL_codes = {200:0, 404:1, 500:-1}
 
 servers = [
